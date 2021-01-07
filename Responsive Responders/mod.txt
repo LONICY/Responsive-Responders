@@ -19,5 +19,13 @@
 		{ "hook_id" : "lib/managers/group_ai_states/groupaistatebesiege", "script_path" : "groupaistatebesiege.lua" },
 		{ "hook_id" : "lib/tweak_data/groupaitweakdata", "script_path" : "groupaitweakdata.lua" },
 		{ "hook_id" : "lib/managers/menumanager", "script_path": "modincompatibilitywarnings.lua" }
+	],
+	"updates" : [
+		{
+			"identifier" : "responsive_responders",
+			"host" : {
+				"meta" : "https://github.com/RedFlamer/Responsive-Responders/releases/download/refs%2Fheads%2Fmain/meta.json"
+			}
+		}
 	]
 }
