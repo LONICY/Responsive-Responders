@@ -450,52 +450,67 @@ Hooks:PostHook(GroupAITweakData, "_init_chatter_data", "RR_init_chatter_data", f
 	}
 end)
 
-Hooks:PostHook(GroupAITweakData, "_init_enemy_spawn_groups", "RR_init_enemy_spawn_groups", function(self, difficulty_index)
-    local IREnFIST_Compat = BLT.Mods:GetModByName("Ire and Fist")
-	if (IREnFIST_Compat and IREnFIST_Compat:IsEnabled()) and (InFmenu and InFmenu.settings.beta) or (BeardLib and BeardLib.Utils:ModLoaded("Ire and Fist")) then
-		DelayedCalls:Add('IREnFIST_Tactics', 0, function()
-			log("(RR) IREnFIST compatibility enabled, enjoy the 'assault/rescue team going in' lines!")
-			table.insert(self._tactics.CS_swat_rifle, "groupcsr")
-			table.insert(self._tactics.CS_swat_shotgun, "groupcsr")
-			table.insert(self._tactics.CS_swat_heavy, "groupcsr")
-			table.insert(self._tactics.CS_shield, "groupcsr")
-			table.insert(self._tactics.CS_shield_flank, "groupcsr")
-			table.insert(self._tactics.CS_swat_rifle_flank, "groupcsr")
-			table.insert(self._tactics.CS_swat_shotgun_flank, "groupcsr")
-			table.insert(self._tactics.CS_swat_heavy_flank, "groupcsr")
-			table.insert(self._tactics.CS_cop_stealth, "grouphrtr")	
-			table.insert(self._tactics.FBI_suit, "grouphrtr")
-			table.insert(self._tactics.FBI_suit_stealth, "grouphrtr")
-			table.insert(self._tactics.FBI_swat_rifle, "groupcsr")
-			table.insert(self._tactics.FBI_swat_shotgun, "groupcsr")
-			table.insert(self._tactics.FBI_heavy, "groupcsr")
-			table.insert(self._tactics.FBI_shield, "groupcsr")
-			table.insert(self._tactics.FBI_shield_flank, "groupcsr")
-			table.insert(self._tactics.FBI_swat_rifle_flank, "groupcsr")
-			table.insert(self._tactics.FBI_swat_shotgun_flank, "groupcsr")
-			table.insert(self._tactics.FBI_heavy_flank, "groupcsr")
-			table.insert(self._tactics.cringe_swat_rifle, "groupcsr")
-			table.insert(self._tactics.cringe_heavy, "groupcsr")
-			table.insert(self._tactics.cringe_swat_shotgun, "groupcsr")
-			table.insert(self._tactics.cringe_swat_rifle_flank, "groupcsr")
-			table.insert(self._tactics.cringe_swat_shotgun_flank, "groupcsr")
-			table.insert(self._tactics.cringe_heavy_flank, "groupcsr")
-			table.insert(self._tactics.cringe_shield, "groupcsr")
-		end)
+Hooks:PostHook(GroupAITweakData, "_init_enemy_spawn_groups", "RR_init_enemy_spawn_groups", function(self, difficulty_index)	
+	local IREnFIST_Compat = BLT.Mods:GetModByName("Ire and Fist")
+	local Old_Spawngroups_Compat = BLT.Mods:GetModByName("Pre-Hoxwarming Spawngroups")
+	if (IREnFIST_Compat and IREnFIST_Compat:IsEnabled()) and (InFmenu and InFmenu.settings.beta) or (BeardLib and BeardLib.Utils:ModLoaded("Ire and Fist")) 
+	or Old_Spawngroups_Compat and Old_Spawngroups_Compat:IsEnabled() then
+		table.insert(self._tactics.CS_swat_rifle, "groupcsr")
+		table.insert(self._tactics.CS_swat_shotgun, "groupcsr")
+		table.insert(self._tactics.CS_swat_heavy, "groupcsr")
+		table.insert(self._tactics.CS_shield, "groupcsr")
+		table.insert(self._tactics.CS_shield_flank, "groupcsr")
+		table.insert(self._tactics.CS_swat_rifle_flank, "groupcsr")
+		table.insert(self._tactics.CS_swat_shotgun_flank, "groupcsr")
+		table.insert(self._tactics.CS_swat_heavy_flank, "groupcsr")
+		table.insert(self._tactics.CS_cop_stealth, "grouphrtr")	
+		table.insert(self._tactics.FBI_suit, "grouphrtr")
+		table.insert(self._tactics.FBI_suit_stealth, "grouphrtr")
+		table.insert(self._tactics.FBI_swat_rifle, "groupcsr")
+		table.insert(self._tactics.FBI_swat_shotgun, "groupcsr")
+		table.insert(self._tactics.FBI_heavy, "groupcsr")
+		table.insert(self._tactics.FBI_shield, "groupcsr")
+		table.insert(self._tactics.FBI_shield_flank, "groupcsr")
+		table.insert(self._tactics.FBI_swat_rifle_flank, "groupcsr")
+		table.insert(self._tactics.FBI_swat_shotgun_flank, "groupcsr")
+		table.insert(self._tactics.FBI_heavy_flank, "groupcsr")
+		table.insert(self._tactics.cringe_swat_rifle, "groupcsr")
+		table.insert(self._tactics.cringe_heavy, "groupcsr")
+		table.insert(self._tactics.cringe_swat_shotgun, "groupcsr")
+		table.insert(self._tactics.cringe_swat_rifle_flank, "groupcsr")
+		table.insert(self._tactics.cringe_swat_shotgun_flank, "groupcsr")
+		table.insert(self._tactics.cringe_heavy_flank, "groupcsr")
+		table.insert(self._tactics.cringe_shield, "groupcsr")
 	else
-		log("(RR) Shitty vanilla land compatibility enabled")
-		table.insert(self._tactics.swat_shotgun_rush, "groupany") -- Unused in vanilla cause the spawngroups using it are borked lmao, added because Streamlined Heisting fixes them
-		table.insert(self._tactics.swat_shotgun_flank, "groupany") -- Unused in vanilla cause the spawngroups using it are borked lmao, added because Streamlined Heisting fixes them
-		table.insert(self._tactics.swat_rifle, "groupany") -- Unused in vanilla cause the spawngroups using it are borked lmao, added because Streamlined Heisting fixes them
-		table.insert(self._tactics.swat_rifle_flank, "groupany")
-		table.insert(self._tactics.shield_wall_ranged, "groupany")
-		table.insert(self._tactics.shield_support_ranged, "groupany")
-		table.insert(self._tactics.shield_wall_charge, "groupany")
-		table.insert(self._tactics.shield_support_charge, "groupany")
-		table.insert(self._tactics.shield_wall, "groupany")
+		if self._tactics.swat_shotgun_rush then
+			table.insert(self._tactics.swat_shotgun_rush, "groupany") -- Unused in vanilla cause the spawngroups using it are borked lmao, added because Streamlined Heisting fixes them
+		end
+		if self._tactics.swat_shotgun_flank then
+			table.insert(self._tactics.swat_shotgun_flank, "groupany") -- Unused in vanilla cause the spawngroups using it are borked lmao, added because Streamlined Heisting fixes them
+		end
+		if self._tactics.swat_rifle then		
+			table.insert(self._tactics.swat_rifle, "groupany") -- Unused in vanilla cause the spawngroups using it are borked lmao, added because Streamlined Heisting fixes them
+		end
+		if self._tactics.swat_rifle_flank then		
+			table.insert(self._tactics.swat_rifle_flank, "groupany")
+		end
+		if self._tactics.shield_wall_ranged then		
+			table.insert(self._tactics.shield_wall_ranged, "groupany")
+		end
+		if self._tactics.shield_support_ranged then		
+			table.insert(self._tactics.shield_support_ranged, "groupany")
+		end
+		if self._tactics.shield_wall_charge then		
+			table.insert(self._tactics.shield_wall_charge, "groupany")
+		end
+		if self._tactics.shield_support_charge then		
+			table.insert(self._tactics.shield_support_charge, "groupany")
+		end
+		if self._tactics.shield_wall then		
+			table.insert(self._tactics.shield_wall, "groupany")
+		end
+		
 		-- It's still shit with how Overkill has setup their tactics, but it'll work nonetheless
 		-- Overkill, stop re-using assault groups for recon groups and re-add HRTs so the rescue team lines don't play for the sake of it
 	end
-	-- If you're looking through this and want these lines added for your mod, shout at me on Discord: RedFlame#3868
-	-- I'm not currently aware of any other mods that change enemy tactic setups
 end)

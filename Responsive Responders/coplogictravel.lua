@@ -4,6 +4,8 @@ local math_random = math.random
 local queued_update_orig = CopLogicTravel.queued_update
 function CopLogicTravel.queued_update(data, ...)
 	queued_update_orig(data, ...)
+	
+	log("queued_update")
 
 	local my_data = data.internal_data
 	local objective = data.objective or nil
