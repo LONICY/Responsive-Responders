@@ -4,7 +4,7 @@
 	"author" : "RedFlame",
 	"contact" : "Discord: RedFlame#3868",
 	"version" : "13",
-	"priority" : "1000",
+	"priority" : "-100",
 	"blt_version" : 2,
 	"color" : "0 0 1",
 	"hooks" : [
