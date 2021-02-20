@@ -1,5 +1,3 @@
--- This is a fucking mess, i should probably document it a little bit better
-
 function GroupAIStateBesiege:init(group_ai_state)
 	GroupAIStateBesiege.super.init(self)
 
@@ -7,8 +5,8 @@ function GroupAIStateBesiege:init(group_ai_state)
 		self:_queue_police_upd_task()
 	end
 
-	self._tweak_data = tweak_data.group_ai[group_ai_state]
 	self._had_hostages = nil
+	self._tweak_data = tweak_data.group_ai[group_ai_state]
 	self._spawn_group_timers = {}
 	self._graph_distance_cache = {}
 end
@@ -222,191 +220,25 @@ function GroupAIStateBesiege:_chk_group_use_flash_grenade(group, task_data, deto
 	end
 end
 
-function GroupAIStateBesiege:_perform_group_spawning(spawn_task, force, use_last)
-	local nr_units_spawned = 0
-	local produce_data = {
-		name = true,
-		spawn_ai = {}
-	}
-	local group_ai_tweak = tweak_data.group_ai
-	local spawn_points = spawn_task.spawn_group.spawn_pts
-
-	local function _try_spawn_unit(u_type_name, spawn_entry)
-		if GroupAIStateBesiege._MAX_SIMULTANEOUS_SPAWNS <= nr_units_spawned and not force then
-			return
-		end
-
-		local hopeless = true
-		local current_unit_type = tweak_data.levels:get_ai_group_type()
-
-		for _, sp_data in ipairs(spawn_points) do
-			local category = group_ai_tweak.unit_categories[u_type_name]
-
-			if (sp_data.accessibility == "any" or category.access[sp_data.accessibility]) and (not sp_data.amount or sp_data.amount > 0) and sp_data.mission_element:enabled() then
-				hopeless = false
-
-				if sp_data.delay_t < self._t then
-					local units = category.unit_types[current_unit_type]
-					produce_data.name = units[math.random(#units)]
-					produce_data.name = managers.modifiers:modify_value("GroupAIStateBesiege:SpawningUnit", produce_data.name)
-					local spawned_unit = sp_data.mission_element:produce(produce_data)
-					local u_key = spawned_unit:key()
-					local objective = nil
-
-					if spawn_task.objective then
-						objective = self.clone_objective(spawn_task.objective)
-					else
-						objective = spawn_task.group.objective.element:get_random_SO(spawned_unit)
-
-						if not objective then
-							spawned_unit:set_slot(0)
-
-							return true
-						end
-
-						objective.grp_objective = spawn_task.group.objective
-					end
-
-					local u_data = self._police[u_key]
-
-					self:set_enemy_assigned(objective.area, u_key)
-
-					if spawn_entry.tactics then
-						u_data.tactics = spawn_entry.tactics
-						u_data.tactics_map = {}
-
-						for _, tactic_name in ipairs(u_data.tactics) do
-							u_data.tactics_map[tactic_name] = true
-						end
-					end
-
-					spawned_unit:brain():set_spawn_entry(spawn_entry, u_data.tactics_map)
-
-					u_data.rank = spawn_entry.rank
-
-					self:_add_group_member(spawn_task.group, u_key)
-
-					if spawned_unit:brain():is_available_for_assignment(objective) then
-						if objective.element then
-							objective.element:clbk_objective_administered(spawned_unit)
-						end
-
-						spawned_unit:brain():set_objective(objective)
-					else
-						spawned_unit:brain():set_followup_objective(objective)
-					end
-
-					nr_units_spawned = nr_units_spawned + 1
-
-					if spawn_task.ai_task then
-						spawn_task.ai_task.force_spawned = spawn_task.ai_task.force_spawned + 1
-						spawned_unit:brain()._logic_data.spawned_in_phase = spawn_task.ai_task.phase
-					end
-
-					sp_data.delay_t = self._t + sp_data.interval
-
-					if sp_data.amount then
-						sp_data.amount = sp_data.amount - 1
-					end
-
-					return true
-				end
-			end
-		end
-
-		if hopeless then
-			debug_pause("[GroupAIStateBesiege:_upd_group_spawning] spawn group", spawn_task.spawn_group.id, "failed to spawn unit", u_type_name)
-
-			return true
-		end
-	end
-
-	for u_type_name, spawn_info in pairs(spawn_task.units_remaining) do
-		if not group_ai_tweak.unit_categories[u_type_name].access.acrobatic then
-			for i = spawn_info.amount, 1, -1 do
-				local success = _try_spawn_unit(u_type_name, spawn_info.spawn_entry)
-
-				if success then
-					spawn_info.amount = spawn_info.amount - 1
-				end
-
-				break
-			end
-		end
-	end
-
-	for u_type_name, spawn_info in pairs(spawn_task.units_remaining) do
-		for i = spawn_info.amount, 1, -1 do
-			local success = _try_spawn_unit(u_type_name, spawn_info.spawn_entry)
-
-			if success then
-				spawn_info.amount = spawn_info.amount - 1
-			end
-
-			break
-		end
-	end
-
-	local complete = true
-
-	for u_type_name, spawn_info in pairs(spawn_task.units_remaining) do
-		if spawn_info.amount > 0 then
-			complete = false
-
-			break
-		end
-	end
-
-	if complete then
-		spawn_task.group.has_spawned = true
-		-- Play Assault/Rescue team going in line
+local _perform_group_spawning_orig = GroupAIStateBesiege._perform_group_spawning
+function GroupAIStateBesiege:_perform_group_spawning(spawn_task, force, use_last, ...)
+	_perform_group_spawning_orig(self, spawn_task, force, use_last, ...)
+	if spawn_task.group.has_spawned then
 		self:_voice_groupentry(spawn_task.group)
-		table.remove(self._spawning_groups, use_last and #self._spawning_groups or 1)
-
-		if spawn_task.group.size <= 0 then
-			self._groups[spawn_task.group.id] = nil
-		end
 	end
 end
 
+local _end_regroup_task_orig = GroupAIStateBesiege._end_regroup_task
 function GroupAIStateBesiege:_end_regroup_task()
+	_end_regroup_task_orig(self)
 	if self._task_data.regroup.active then
-		self._task_data.regroup.active = nil
-
-		managers.trade:set_trade_countdown(true)
-		self:set_assault_mode(false)
-
-		if not self._smoke_grenade_ignore_control then
-			managers.network:session():send_to_peers_synched("sync_smoke_grenade_kill")
-			self:sync_smoke_grenade_kill()
-		end
-
-		local dmg = self._downs_during_assault
-		local limits = tweak_data.group_ai.bain_assault_praise_limits
-		local result = dmg < limits[1] and 0 or dmg < limits[2] and 1 or 2
-
-		managers.mission:call_global_event("end_assault_late")
-		managers.groupai:dispatch_event("end_assault_late", self._assault_number)
-		managers.hud:end_assault(result)
-		self:_mark_hostage_areas_as_unsafe()
-		self:_set_rescue_state(true)
-
-		if not self._task_data.assault.next_dispatch_t then
-			local assault_delay = self._tweak_data.assault.delay
-			self._task_data.assault.next_dispatch_t = self._t + self:_get_difficulty_dependent_value(assault_delay)
-			
+		if not self._task_data.assault.next_dispatch_t then		
 			if self._hostage_headcount > 3 then
 				self._had_hostages = true
 			else
 				self._had_hostages = nil
 			end
 		end
-
-		if self._draw_drama then
-			self._draw_drama.regroup_hist[#self._draw_drama.regroup_hist][2] = self._t
-		end
-
-		self._task_data.recon.next_dispatch_t = self._t
 	end
 end
 
