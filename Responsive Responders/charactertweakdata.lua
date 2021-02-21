@@ -80,7 +80,11 @@ Hooks:PostHook(CharacterTweakData, "init", "RR_Set_Enemy_Chatter", function(self
 		open_fire = true,
 		suppress = true,
 		dodge = true,
-		cuffed = true
+		cuffed = true,
+		incomming_tank = true,
+		incomming_spooc = true,
+		incomming_shield = true,
+		incomming_taser = true
 	}
 	local gangster = {
 		aggressive = true,
@@ -104,7 +108,11 @@ Hooks:PostHook(CharacterTweakData, "init", "RR_Set_Enemy_Chatter", function(self
 		sentry = true,
 		suppress = true,
 		dodge = true,
-		cuffed = true
+		cuffed = true,
+		incomming_tank = true,
+		incomming_spooc = true,
+		incomming_shield = true,
+		incomming_taser = true
 	}
 	local security = {
 		aggressive = true,
@@ -153,7 +161,11 @@ Hooks:PostHook(CharacterTweakData, "init", "RR_Set_Enemy_Chatter", function(self
 		deathguard = true,
 		open_fire = true,
 		suppress = true,
-		cuffed = true
+		cuffed = true,
+		incomming_tank = true,
+		incomming_spooc = true,
+		incomming_shield = true,
+		incomming_taser = true
 	}
 	self.medic.chatter = {
 		aggressive = true,

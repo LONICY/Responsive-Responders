@@ -422,7 +422,7 @@ Hooks:PostHook(GroupAITweakData, "_init_chatter_data", "RR_init_chatter_data", f
 		duration = {10, 10},
 		interval = {0.5, 1},
 		group_min = 0,
-		queue = "bdz"
+		queue = "mov"
 	}
 	self.enemy_chatter.incomming_spooc = {
 		radius = 1200,
@@ -430,7 +430,7 @@ Hooks:PostHook(GroupAITweakData, "_init_chatter_data", "RR_init_chatter_data", f
 		duration = {10, 10},
 		interval = {0.5, 1},
 		group_min = 0,
-		queue = "clk"
+		queue = "r01"
 	}
 	self.enemy_chatter.incomming_shield = {
 		radius = 1500,
@@ -438,7 +438,7 @@ Hooks:PostHook(GroupAITweakData, "_init_chatter_data", "RR_init_chatter_data", f
 		duration = {10, 10},
 		interval = {0.5, 1},
 		group_min = 0,
-		queue = "shd"
+		queue = "pos"
 	}
 	self.enemy_chatter.incomming_taser = {
 		radius = 1500,
@@ -446,7 +446,7 @@ Hooks:PostHook(GroupAITweakData, "_init_chatter_data", "RR_init_chatter_data", f
 		duration = {60, 60},
 		interval = {0.5, 1},
 		group_min = 0,
-		queue = "tsr"
+		queue = "bak"
 	}
 end)
 
