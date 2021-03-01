@@ -181,7 +181,7 @@ Hooks:PostHook(CopLogicAttack, "queue_update", "RR_queue_update", function(data,
 	end
 end)
 
-Hooks:PostHook(CopLogicAttack, "aim_allow_fire", "RR_aim_allow_fire", function(shoot, data, my_data)
+Hooks:PostHook(CopLogicAttack, "aim_allow_fire", "RR_aim_allow_fire", function(shoot, aim, data, my_data)
 	local focus_enemy = data.attention_obj
 
 	if shoot and not my_data.firing then
