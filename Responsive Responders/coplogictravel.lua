@@ -1,10 +1,7 @@
 local math_lerp = math.lerp
 local math_random = math.random
 
-local queued_update_orig = CopLogicTravel.queued_update
-function CopLogicTravel.queued_update(data, ...)
-	queued_update_orig(data, ...)
-
+Hooks:PostHook(CopLogicTravel, "queued_update", "RR_queued_update", function(data)
 	local my_data = data.internal_data
 	local objective = data.objective or nil
 	data.t = TimerManager:game():time()
@@ -169,4 +166,4 @@ function CopLogicTravel.queued_update(data, ...)
 			managers.groupai:state():chk_say_enemy_chatter( data.unit, data.m_pos, "assaultpanic" )
 		end	
 	end
-end
+end)

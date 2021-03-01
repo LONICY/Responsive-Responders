@@ -1,8 +1,6 @@
-local init_orig = GroupAIStateBesiege.init
-function GroupAIStateBesiege:init(group_ai_state)
-	init_orig(self, group_ai_state)
+Hooks:PostHook(GroupAIStateBesiege, "init", "RR_init", function(self)
 	self._had_hostages = nil
-end
+end)
 
 function GroupAIStateBesiege:chk_assault_number()
 	if not self._assault_number then
@@ -147,17 +145,13 @@ function GroupAIStateBesiege:_chk_group_use_flash_grenade(group, task_data, deto
 	end
 end
 
-local _perform_group_spawning_orig = GroupAIStateBesiege._perform_group_spawning
-function GroupAIStateBesiege:_perform_group_spawning(spawn_task, force, use_last, ...)
-	_perform_group_spawning_orig(self, spawn_task, force, use_last, ...)
+Hooks:PostHook(GroupAIStateBesiege, "_perform_group_spawning", "RR_perform_group_spawning", function(self, spawn_task)
 	if spawn_task.group.has_spawned then
 		self:_voice_groupentry(spawn_task.group)
 	end
-end
+end)
 
-local _end_regroup_task_orig = GroupAIStateBesiege._end_regroup_task
-function GroupAIStateBesiege:_end_regroup_task()
-	_end_regroup_task_orig(self)
+Hooks:PostHook(GroupAIStateBesiege, "_end_regroup_task", "RR_end_regroup_task", function(self)
 	if self._task_data.regroup.active then
 		if not self._task_data.assault.next_dispatch_t then		
 			if self._hostage_headcount > 3 then
@@ -167,7 +161,7 @@ function GroupAIStateBesiege:_end_regroup_task()
 			end
 		end
 	end
-end
+end)
 
 -- Retreat after assault and push just before assault lines
 function GroupAIStateBesiege:_upd_assault_task()

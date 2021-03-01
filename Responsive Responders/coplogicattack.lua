@@ -1,8 +1,6 @@
 local math_random = math.random
 
-local _upd_enemy_detection_orig = CopLogicAttack._upd_enemy_detection
-function CopLogicAttack._upd_enemy_detection(data, is_synchronous, ...)
-	_upd_enemy_detection_orig(data, is_synchronous, ...)
+Hooks:PostHook(CopLogicAttack, "_upd_enemy_detection", "RR_upd_enemy_detection", function(data)
 
 	local my_data = data.internal_data
 	local new_attention, new_prio_slot, new_reaction = CopLogicIdle._get_priority_attention(data, data.detected_attention_objects, nil)
@@ -22,11 +20,9 @@ function CopLogicAttack._upd_enemy_detection(data, is_synchronous, ...)
 			end
 		end
 	end
-end
+end)
 
-local queue_update_orig = CopLogicAttack.queue_update
-function CopLogicAttack.queue_update(data, my_data, ...)
-	queue_update_orig(data, my_data, ...)
+Hooks:PostHook(CopLogicAttack, "queue_update", "RR_queue_update", function(data, my_data)
 	local hostage_count = managers.groupai:state():get_hostage_count_for_chatter() --check current hostage count
 	local chosen_panic_chatter = "controlpanic" --set default generic assault break chatter
 	
@@ -183,67 +179,61 @@ function CopLogicAttack.queue_update(data, my_data, ...)
 			
 		end	
 	end
-end
+end)
 
-local aim_allow_fire_orig = CopLogicAttack.aim_allow_fire
-function CopLogicAttack.aim_allow_fire(shoot, aim, data, my_data, ...)
-	aim_allow_fire_orig(shoot, aim, data, my_data, ...)
+Hooks:PostHook(CopLogicAttack, "aim_allow_fire", "RR_aim_allow_fire", function(shoot, data, my_data)
 	local focus_enemy = data.attention_obj
 
-	if shoot then
-		if not my_data.firing then
-			if not data.unit:in_slot(16) and not data.is_converted and data.char_tweak and data.char_tweak.chatter and data.char_tweak.chatter.aggressive then
-				if not data.unit:base():has_tag("special") and data.unit:base():has_tag("law") and not data.unit:base()._tweak_table == "gensec" and not data.unit:base()._tweak_table == "security" then
-					if focus_enemy.verified and focus_enemy.verified_dis <= 500 then
-						if managers.groupai:state():chk_assault_active_atm() then
-							local roll = math.random(1, 100)
-						
-							if roll < 33 then
-								managers.groupai:state():chk_say_enemy_chatter(data.unit, data.m_pos, "aggressivecontrolsurprised1")
-							elseif roll < 66 and roll > 33 then
-								managers.groupai:state():chk_say_enemy_chatter(data.unit, data.m_pos, "aggressivecontrolsurprised2")
-							else
-								managers.groupai:state():chk_say_enemy_chatter(data.unit, data.m_pos, "open_fire")
-							end
+	if shoot and not my_data.firing then
+		if not data.unit:in_slot(16) and not data.is_converted and data.char_tweak and data.char_tweak.chatter and data.char_tweak.chatter.aggressive then
+			if not data.unit:base():has_tag("special") and data.unit:base():has_tag("law") and not data.unit:base()._tweak_table == "gensec" and not data.unit:base()._tweak_table == "security" then
+				if focus_enemy.verified and focus_enemy.verified_dis <= 500 then
+					if managers.groupai:state():chk_assault_active_atm() then
+						local roll = math.random(1, 100)
+					
+						if roll < 33 then
+							managers.groupai:state():chk_say_enemy_chatter(data.unit, data.m_pos, "aggressivecontrolsurprised1")
+						elseif roll < 66 and roll > 33 then
+							managers.groupai:state():chk_say_enemy_chatter(data.unit, data.m_pos, "aggressivecontrolsurprised2")
 						else
-							local roll = math.random(1, 100)
-						
-							if roll <= chance_heeeeelpp then
-								managers.groupai:state():chk_say_enemy_chatter(data.unit, data.m_pos, "aggressivecontrolsurprised1")
-							else --hopefully some variety here now
-								managers.groupai:state():chk_say_enemy_chatter(data.unit, data.m_pos, "aggressivecontrolsurprised2")
-							end	
-						end
-					else
-						if managers.groupai:state():chk_assault_active_atm() then
 							managers.groupai:state():chk_say_enemy_chatter(data.unit, data.m_pos, "open_fire")
-						else
-							managers.groupai:state():chk_say_enemy_chatter(data.unit, data.m_pos, "aggressivecontrol")
-						end
-					end
-				elseif data.unit:base():has_tag("special") then
-					if not data.unit:base():has_tag("tank") and data.unit:base():has_tag("medic") then
-						managers.groupai:state():chk_say_enemy_chatter(data.unit, data.m_pos, "aggressive")
-					elseif data.unit:base():has_tag("shield") then
-						local shield_knock_cooldown = math.random(3, 6)
-						if not my_data.shield_knock_cooldown or my_data.shield_knock_cooldown < data.t then
-							my_data.shield_knock_cooldown = data.t + shield_knock_cooldown
-							data.unit:sound():play("shield_identification", nil, true)
 						end
 					else
-						managers.groupai:state():chk_say_enemy_chatter(data.unit, data.m_pos, "contact")
+						local roll = math.random(1, 100)
+					
+						if roll <= chance_heeeeelpp then
+							managers.groupai:state():chk_say_enemy_chatter(data.unit, data.m_pos, "aggressivecontrolsurprised1")
+						else --hopefully some variety here now
+							managers.groupai:state():chk_say_enemy_chatter(data.unit, data.m_pos, "aggressivecontrolsurprised2")
+						end	
+					end
+				else
+					if managers.groupai:state():chk_assault_active_atm() then
+						managers.groupai:state():chk_say_enemy_chatter(data.unit, data.m_pos, "open_fire")
+					else
+						managers.groupai:state():chk_say_enemy_chatter(data.unit, data.m_pos, "aggressivecontrol")
+					end
+				end
+			elseif data.unit:base():has_tag("special") then
+				if not data.unit:base():has_tag("tank") and data.unit:base():has_tag("medic") then
+					managers.groupai:state():chk_say_enemy_chatter(data.unit, data.m_pos, "aggressive")
+				elseif data.unit:base():has_tag("shield") then
+					local shield_knock_cooldown = math.random(3, 6)
+					if not my_data.shield_knock_cooldown or my_data.shield_knock_cooldown < data.t then
+						my_data.shield_knock_cooldown = data.t + shield_knock_cooldown
+						data.unit:sound():play("shield_identification", nil, true)
 					end
 				else
 					managers.groupai:state():chk_say_enemy_chatter(data.unit, data.m_pos, "contact")
 				end
+			else
+				managers.groupai:state():chk_say_enemy_chatter(data.unit, data.m_pos, "contact")
 			end
 		end
 	end
-end
+end)
 
-local _upd_aim_orig = CopLogicAttack._upd_aim
-function CopLogicAttack._upd_aim(data, my_data, ...)
-	_upd_aim_orig(data, my_data, ...)
+Hooks:PostHook(CopLogicAttack, "_upd_aim", "RR_upd_aim", function(data)
 	local focus_enemy = data.attention_obj
 
 	if focus_enemy and focus_enemy.is_person and AIAttentionObject.REACT_COMBAT <= data.attention_obj.reaction and not data.unit:in_slot(16) and not data.is_converted then
@@ -267,17 +257,15 @@ function CopLogicAttack._upd_aim(data, my_data, ...)
 			end
 		end
 	end
-end
+end)
 
 -- The big stuff, cops will comment on player equipment
 
 CopLogicAttack._cop_comment_cooldown_t = {}
 
-local _CopLogicAttack_update = CopLogicAttack.update
-function CopLogicAttack.update(data)
-	_CopLogicAttack_update(data)
+Hooks:PostHook(CopLogicAttack, "update", "RR_update", function(data)
 	CopLogicAttack:inform_law_enforcements(data)	
-end
+end)
 
 function CopLogicAttack:_game_t()
 	return TimerManager:game():time()
@@ -376,29 +364,29 @@ function CopLogicAttack:inform_law_enforcements(data, debug_enemy)
 		if enemy_target.is_deployable then
 			msg_type = "sentry_detected"
 			sound_name = "ch2" -- Every voiceset except l5n (unused)
-			cooldown_t = 20
+			cooldown_t = 30
 		elseif enemy_target.unit:in_slot(managers.slot:get_mask("all_criminals")) then
 			local weapon = enemy_target.unit.inventory and enemy_target.unit:inventory():equipped_unit()
 			if weapon and weapon:base():is_category("saw") then
 				msg_type = "saw_maniac"
 				sound_name = "ch4" -- Every voiceset except l5n (unused)
-				cooldown_t = 20
+				cooldown_t = 30
 			elseif self:_has_deployable_type(enemy_target.unit, "doctor_bag") then
 				msg_type = "doc_bag"
 				sound_name = "med" -- Why do only l2n, l3n and l4n have this line :/
-				cooldown_t = 20
+				cooldown_t = 30
 			elseif self:_has_deployable_type(enemy_target.unit, "first_aid_kit") then
 				msg_type = "first_aid_kit"
 				sound_name = "med" -- Why do only l2n, l3n and l4n have this line :/
-				cooldown_t = 20
+				cooldown_t = 30
 			elseif self:_has_deployable_type(enemy_target.unit, "ammo_bag") then
 				msg_type = "ammo_bag"
 				sound_name = "amm" -- All lxn voicesets 
-				cooldown_t = 20
+				cooldown_t = 30
 			elseif self:_has_deployable_type(enemy_target.unit, "trip_mine") then
 				msg_type = "trip_mine"
 				sound_name = "ch1" -- Every voiceset except l5n (unused)
-				cooldown_t = 20
+				cooldown_t = 30
 			end
 		end
 	end

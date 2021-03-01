@@ -1,7 +1,4 @@
-local init_orig = CopActionHurt.init
-function CopActionHurt:init(action_desc, common_data, ...)
-	init_orig(self, action_desc, common_data, ...)
-
+Hooks:PostHook(CopActionHurt, "init", "RR_init", function(self, action_desc)
 	local tweak_table = self._unit:base()._tweak_table
 	local action_type = action_desc.hurt_type
 
@@ -36,6 +33,4 @@ function CopActionHurt:init(action_desc, common_data, ...)
 			self._unit:sound():say("x01a_any_3p", true)
 		end
 	end
-	
-	return true
-end
+end)
