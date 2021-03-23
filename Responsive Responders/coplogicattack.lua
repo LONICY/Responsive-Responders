@@ -10,12 +10,10 @@ Hooks:PostHook(CopLogicAttack, "_upd_enemy_detection", "RR_upd_enemy_detection",
 			if data.tactics and data.tactics.flank then
 				if data.char_tweak.chatter and data.char_tweak.chatter.look_for_angle then		
 					managers.groupai:state():chk_say_enemy_chatter( data.unit, data.m_pos, "look_for_angle" )
-					-- log("looking for another angle on these fuckers")
 				end
 			elseif data.tactics and data.tactics.ranged_fire then 
 				if data.char_tweak.chatter and data.char_tweak.chatter.look_for_angle then		
 					managers.groupai:state():chk_say_enemy_chatter( data.unit, data.m_pos, "inpos" )
-					-- log("i'm in position")
 				end
 			end
 		end
@@ -184,51 +182,55 @@ end)
 Hooks:PostHook(CopLogicAttack, "aim_allow_fire", "RR_aim_allow_fire", function(shoot, aim, data, my_data)
 	local focus_enemy = data.attention_obj
 
-	if shoot and not my_data.firing then
-		if not data.unit:in_slot(16) and not data.is_converted and data.char_tweak and data.char_tweak.chatter and data.char_tweak.chatter.aggressive then
-			if not data.unit:base():has_tag("special") and data.unit:base():has_tag("law") and not data.unit:base()._tweak_table == "gensec" and not data.unit:base()._tweak_table == "security" then
-				if focus_enemy.verified and focus_enemy.verified_dis <= 500 then
-					if managers.groupai:state():chk_assault_active_atm() then
-						local roll = math.random(1, 100)
-					
-						if roll < 33 then
-							managers.groupai:state():chk_say_enemy_chatter(data.unit, data.m_pos, "aggressivecontrolsurprised1")
-						elseif roll < 66 and roll > 33 then
-							managers.groupai:state():chk_say_enemy_chatter(data.unit, data.m_pos, "aggressivecontrolsurprised2")
-						else
-							managers.groupai:state():chk_say_enemy_chatter(data.unit, data.m_pos, "open_fire")
-						end
+	if not data.unit:in_slot(16) and not data.is_converted and data.char_tweak and data.char_tweak.chatter and data.char_tweak.chatter.aggressive then
+		if not data.unit:base():has_tag("special") and data.unit:base():has_tag("law") and not data.unit:base()._tweak_table == "gensec" and not data.unit:base()._tweak_table == "security" then
+			if focus_enemy.verified and focus_enemy.verified_dis <= 500 then
+				if managers.groupai:state():chk_assault_active_atm() then
+					local roll = math.random(1, 100)
+				
+					if roll < 33 then
+						managers.groupai:state():chk_say_enemy_chatter(data.unit, data.m_pos, "aggressivecontrolsurprised1")
+					elseif roll < 66 and roll > 33 then
+						managers.groupai:state():chk_say_enemy_chatter(data.unit, data.m_pos, "aggressivecontrolsurprised2")
 					else
-						local roll = math.random(1, 100)
-					
-						if roll <= chance_heeeeelpp then
-							managers.groupai:state():chk_say_enemy_chatter(data.unit, data.m_pos, "aggressivecontrolsurprised1")
-						else --hopefully some variety here now
-							managers.groupai:state():chk_say_enemy_chatter(data.unit, data.m_pos, "aggressivecontrolsurprised2")
-						end	
-					end
-				else
-					if managers.groupai:state():chk_assault_active_atm() then
 						managers.groupai:state():chk_say_enemy_chatter(data.unit, data.m_pos, "open_fire")
-					else
-						managers.groupai:state():chk_say_enemy_chatter(data.unit, data.m_pos, "aggressivecontrol")
-					end
-				end
-			elseif data.unit:base():has_tag("special") then
-				if not data.unit:base():has_tag("tank") and data.unit:base():has_tag("medic") then
-					managers.groupai:state():chk_say_enemy_chatter(data.unit, data.m_pos, "aggressive")
-				elseif data.unit:base():has_tag("shield") then
-					local shield_knock_cooldown = math.random(3, 6)
-					if not my_data.shield_knock_cooldown or my_data.shield_knock_cooldown < data.t then
-						my_data.shield_knock_cooldown = data.t + shield_knock_cooldown
-						data.unit:sound():play("shield_identification", nil, true)
 					end
 				else
-					managers.groupai:state():chk_say_enemy_chatter(data.unit, data.m_pos, "contact")
+					local roll = math.random(1, 100)
+				
+					if roll <= chance_heeeeelpp then
+						managers.groupai:state():chk_say_enemy_chatter(data.unit, data.m_pos, "aggressivecontrolsurprised1")
+					else --hopefully some variety here now
+						managers.groupai:state():chk_say_enemy_chatter(data.unit, data.m_pos, "aggressivecontrolsurprised2")
+					end	
+				end
+			else
+				if managers.groupai:state():chk_assault_active_atm() then
+					managers.groupai:state():chk_say_enemy_chatter(data.unit, data.m_pos, "open_fire")
+				else
+					managers.groupai:state():chk_say_enemy_chatter(data.unit, data.m_pos, "aggressivecontrol")
+				end
+			end
+		elseif data.unit:base():has_tag("special") then
+			if not data.unit:base():has_tag("tank") and data.unit:base():has_tag("medic") then
+				managers.groupai:state():chk_say_enemy_chatter(data.unit, data.m_pos, "aggressive")
+			elseif data.unit:base():has_tag("shield") then
+				local shield_knock_cooldown = math.random(3, 6)
+				if not my_data.shield_knock_cooldown or my_data.shield_knock_cooldown < data.t then
+					local diff_index = tweak_data:difficulty_to_index(Global.game_settings.difficulty)	
+					my_data.shield_knock_cooldown = data.t + shield_knock_cooldown
+					
+					if diff_index < 8 then
+						data.unit:sound():play("shield_identification", nil, true)
+					else
+						data.unit:sound():play("hos_shield_indication_sound_terminator_style", nil, true)
+					end
 				end
 			else
 				managers.groupai:state():chk_say_enemy_chatter(data.unit, data.m_pos, "contact")
 			end
+		else
+			managers.groupai:state():chk_say_enemy_chatter(data.unit, data.m_pos, "contact")
 		end
 	end
 end)
