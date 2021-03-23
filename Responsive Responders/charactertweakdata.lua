@@ -40,11 +40,6 @@ Hooks:PostHook(CharacterTweakData, "init", "RR_Set_Enemy_Chatter", function(self
 		end
 	end
 
-	self.shield.tags = {
-		"law",
-		"shield",
-	}
-
 	-- Give special enemies lines declaring they have spawned
 	self.tank.spawn_sound_event = self.tank.speech_prefix_p1 .. "_entrance" --BULLDOZER, COMING THROUGH!!!
 	self.tank_medic.spawn_sound_event = self.tank.speech_prefix_p1 .. "_entrance_elite" --ELITE BULLDOZER, COMING THROUGH!!!
