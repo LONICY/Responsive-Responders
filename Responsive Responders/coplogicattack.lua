@@ -182,7 +182,7 @@ end)
 Hooks:PostHook(CopLogicAttack, "aim_allow_fire", "RR_aim_allow_fire", function(shoot, aim, data, my_data)
 	local focus_enemy = data.attention_obj
 
-	if not data.unit:in_slot(16) and not data.is_converted and data.char_tweak and data.char_tweak.chatter and data.char_tweak.chatter.aggressive then
+	if shoot and not data.unit:in_slot(16) and not data.is_converted and data.char_tweak and data.char_tweak.chatter and data.char_tweak.chatter.aggressive then
 		if not data.unit:base():has_tag("special") and data.unit:base():has_tag("law") and not data.unit:base()._tweak_table == "gensec" and not data.unit:base()._tweak_table == "security" then
 			if focus_enemy.verified and focus_enemy.verified_dis <= 500 then
 				if managers.groupai:state():chk_assault_active_atm() then
