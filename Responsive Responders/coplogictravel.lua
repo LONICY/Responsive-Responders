@@ -62,22 +62,16 @@ Hooks:PostHook(CopLogicTravel, "queue_update", "RR_queue_update", function(data,
 		chosen_sabotage_chatter = "sabotagegeneric" --if none of these levels are the current one, use a generic "Break their gear!" line
 	end
 	
-	if objective and objective.running and objective.retiring then
-		ignore_radio_rules = true
-		ignore_skirmish_rules = true		
-		chosen_sabotage_chatter = "retreat"
-	elseif data.tactics then
-		if math_random() < 0.5 then
-			ignore_radio_rules = true 
-			ignore_skirmish_rules = true
-			if data.tactics.flank then
-				chosen_sabotage_chatter = "look_for_angle"
-			elseif data.tactics.charge then
-				if math_random() < 0.5 then
-					chosen_sabotage_chatter = "go_go"
-				else
-					chosen_sabotage_chatter = "push"
-				end
+	if data.tactics and math_random() < 0.5 then
+		ignore_radio_rules = true 
+		ignore_skirmish_rules = true
+		if data.tactics.flank then
+			chosen_sabotage_chatter = "look_for_angle"
+		elseif data.tactics.charge then
+			if math_random() < 0.5 then
+				chosen_sabotage_chatter = "go_go"
+			else
+				chosen_sabotage_chatter = "push"
 			end
 		end
 	end
