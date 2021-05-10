@@ -44,6 +44,7 @@ Hooks:PostHook(CopLogicAttack, "queue_update", "RR_queue_update", function(data,
 		end
 	end
 	
+	local level = Global.level_data and Global.level_data.level_id
 	local chosen_sabotage_chatter = "sabotagegeneric" --set default sabotage chatter for variety's sake
 	local skirmish_map = managers.skirmish:is_skirmish()--these shouldnt play on holdout
 	local ignore_radio_rules = nil

@@ -45,7 +45,8 @@ Hooks:PostHook(CopLogicTravel, "queue_update", "RR_queue_update", function(data,
 			chosen_panic_chatter = "hostagepanic3" -- no more hostages!!! full force!!!
 		end
 	end
-	
+
+	local level = Global.level_data and Global.level_data.level_id	
 	local chosen_sabotage_chatter = "sabotagegeneric" --set default sabotage chatter for variety's sake
 	local skirmish_map = managers.skirmish:is_skirmish()--these shouldnt play on holdout
 	local ignore_radio_rules = nil
@@ -102,6 +103,7 @@ Hooks:PostHook(CopLogicTravel, "queue_update", "RR_queue_update", function(data,
 					elseif clearchk > 30 then
 						if not skirmish_map and my_data.radio_voice or not skirmish_map and ignore_radio_rules then
 							managers.groupai:state():chk_say_enemy_chatter( data.unit, data.m_pos, chosen_sabotage_chatter )
+							log("this is working wowowowow")
 						else
 							managers.groupai:state():chk_say_enemy_chatter( data.unit, data.m_pos, chosen_panic_chatter )
 						end
