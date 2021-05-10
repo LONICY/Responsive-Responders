@@ -103,7 +103,6 @@ Hooks:PostHook(CopLogicTravel, "queue_update", "RR_queue_update", function(data,
 					elseif clearchk > 30 then
 						if not skirmish_map and my_data.radio_voice or not skirmish_map and ignore_radio_rules then
 							managers.groupai:state():chk_say_enemy_chatter( data.unit, data.m_pos, chosen_sabotage_chatter )
-							log("this is working wowowowow")
 						else
 							managers.groupai:state():chk_say_enemy_chatter( data.unit, data.m_pos, chosen_panic_chatter )
 						end
