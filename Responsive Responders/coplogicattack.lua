@@ -1,22 +1,10 @@
 local math_random = math.random
 
-Hooks:PostHook(CopLogicAttack, "_upd_enemy_detection", "RR_upd_enemy_detection", function(data)
-
+Hooks:PostHook(CopLogicAttack, "enter", "RR_enter", function(data, ...)
+	local tweak_table = data.unit:base()._tweak_table
 	local my_data = data.internal_data
-	local new_attention, new_prio_slot, new_reaction = CopLogicIdle._get_priority_attention(data, data.detected_attention_objects, nil)
-
-	if new_attention and new_reaction then
-		if AIAttentionObject.REACT_COMBAT <= new_reaction and new_attention.nav_tracker and not my_data.walking_to_optimal_pos then
-			if data.tactics and data.tactics.flank then
-				if data.char_tweak.chatter and data.char_tweak.chatter.look_for_angle then		
-					managers.groupai:state():chk_say_enemy_chatter( data.unit, data.m_pos, "look_for_angle" )
-				end
-			elseif data.tactics and data.tactics.ranged_fire then 
-				if data.char_tweak.chatter and data.char_tweak.chatter.look_for_angle then		
-					managers.groupai:state():chk_say_enemy_chatter( data.unit, data.m_pos, "inpos" )
-				end
-			end
-		end
+	if tweak_table == "heavy_swat" or tweak_table == "fbi_heavy_swat" or tweak_table == "shield" then
+		my_data.radio_voice = true
 	end
 end)
 
@@ -106,8 +94,6 @@ Hooks:PostHook(CopLogicAttack, "queue_update", "RR_queue_update", function(data,
 
 						data.unit:sound():play("shield_identification", nil, true)
 					end
-				elseif data.unit:base()._tweak_table == "akuma" then
-					managers.groupai:state():chk_say_enemy_chatter( data.unit, data.m_pos, "lotusapproach" )
 				end
 			end
 		end

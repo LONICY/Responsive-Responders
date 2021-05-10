@@ -332,7 +332,7 @@ Hooks:PostHook(GroupAITweakData, "_init_chatter_data", "RR_init_chatter_data", f
 		radius = 2000,
 		max_nr = 40,
 		duration = {2, 4},
-		interval = {2, 5},
+		interval = {6, 15},
 		group_min = 2,
 		queue = "rrl"
 	}
@@ -420,7 +420,7 @@ Hooks:PostHook(GroupAITweakData, "_init_chatter_data", "RR_init_chatter_data", f
 		radius = 1500,
 		max_nr = 0,
 		duration = {10, 10},
-		interval = {0.5, 1},
+		interval = {4, 6},
 		group_min = 0,
 		queue = "mov"
 	}
@@ -428,7 +428,7 @@ Hooks:PostHook(GroupAITweakData, "_init_chatter_data", "RR_init_chatter_data", f
 		radius = 1200,
 		max_nr = 0,
 		duration = {10, 10},
-		interval = {0.5, 1},
+		interval = {4, 6},
 		group_min = 0,
 		queue = "r01"
 	}
@@ -436,7 +436,7 @@ Hooks:PostHook(GroupAITweakData, "_init_chatter_data", "RR_init_chatter_data", f
 		radius = 1500,
 		max_nr = 0,
 		duration = {10, 10},
-		interval = {0.5, 1},
+		interval = {4, 6},
 		group_min = 0,
 		queue = "pos"
 	}
@@ -444,7 +444,7 @@ Hooks:PostHook(GroupAITweakData, "_init_chatter_data", "RR_init_chatter_data", f
 		radius = 1500,
 		max_nr = 0,
 		duration = {60, 60},
-		interval = {0.5, 1},
+		interval = {4, 6},
 		group_min = 0,
 		queue = "bak"
 	}

@@ -1,12 +1,16 @@
 local math_lerp = math.lerp
 local math_random = math.random
 
-Hooks:PostHook(CopLogicTravel, "queued_update", "RR_queued_update", function(data)
+Hooks:PostHook(CopLogicTravel, "enter", "RR_enter", function(data, ...)
+	local tweak_table = data.unit:base()._tweak_table
 	local my_data = data.internal_data
-	local objective = data.objective or nil
-	data.t = TimerManager:game():time()
+	if tweak_table == "heavy_swat" or tweak_table == "fbi_heavy_swat" or tweak_table == "shield" then
+		my_data.radio_voice = true	
+	end
+end)
 
-	local level = Global.level_data and Global.level_data.level_id
+Hooks:PostHook(CopLogicTravel, "queue_update", "RR_queue_update", function(data, my_data)
+	local objective = data.objective or nil
 	local hostage_count = managers.groupai:state():get_hostage_count_for_chatter() --check current hostage count
 	local chosen_panic_chatter = "controlpanic" --set default generic assault break chatter
 	
