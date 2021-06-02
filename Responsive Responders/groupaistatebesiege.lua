@@ -121,25 +121,95 @@ function GroupAIStateBesiege:_voice_groupentry(group)
 	end
 end
 
-local _chk_group_use_smoke_grenade_orig = GroupAIStateBesiege._chk_group_use_smoke_grenade
 function GroupAIStateBesiege:_chk_group_use_smoke_grenade(group, task_data, detonate_pos)
-	if _chk_group_use_smoke_grenade_orig(self, group, task_data, detonate_pos) then
-		for group_id, group in pairs(self._groups) do
-			for u_key, u_data in pairs(group.units) do
-				u_data.unit:sound():say("d01", true)
-				return true
+	if task_data.use_smoke and not self:is_smoke_grenade_active() then
+		local shooter_pos, shooter_u_data = nil
+		local duration = tweak_data.group_ai.smoke_grenade_lifetime
+
+		for u_key, u_data in pairs(group.units) do
+			if u_data.tactics_map and u_data.tactics_map.smoke_grenade then
+				if not detonate_pos then
+					local nav_seg_id = u_data.tracker:nav_segment()
+					local nav_seg = managers.navigation._nav_segments[nav_seg_id]
+
+					for neighbour_nav_seg_id, door_list in pairs(nav_seg.neighbours) do
+						local area = self:get_area_from_nav_seg_id(neighbour_nav_seg_id)
+
+						if task_data.target_areas[1].nav_segs[neighbour_nav_seg_id] or next(area.criminal.units) then
+							local random_door_id = door_list[math.random(#door_list)]
+
+							if type(random_door_id) == "number" then
+								detonate_pos = managers.navigation._room_doors[random_door_id].center
+							else
+								detonate_pos = random_door_id:script_data().element:nav_link_end_pos()
+							end
+
+							shooter_pos = mvector3.copy(u_data.m_pos)
+							shooter_u_data = u_data
+
+							break
+						end
+					end
+				end
+
+				if detonate_pos and shooter_u_data then
+					self:detonate_smoke_grenade(detonate_pos, shooter_pos, duration, false)
+
+					task_data.use_smoke_timer = self._t + math.lerp(tweak_data.group_ai.smoke_and_flash_grenade_timeout[1], tweak_data.group_ai.smoke_and_flash_grenade_timeout[2], math.rand(0, 1)^0.5)
+					task_data.use_smoke = false
+
+					if shooter_u_data.char_tweak.chatter.smoke and not shooter_u_data.unit:sound():speaking(self._t) then
+						u_data.unit:sound():say("d01", true)
+					end
+
+					return true
+				end
 			end
 		end
 	end
 end
 
-local _chk_group_use_flash_grenade_orig = GroupAIStateBesiege._chk_group_use_flash_grenade
 function GroupAIStateBesiege:_chk_group_use_flash_grenade(group, task_data, detonate_pos)
-	if _chk_group_use_flash_grenade_orig(self, group, task_data, detonate_pos) then
-		for group_id, group in pairs(self._groups) do
-			for u_key, u_data in pairs(group.units) do
-				u_data.unit:sound():say("d02", true)
-				return true
+	if task_data.use_smoke and not self:is_smoke_grenade_active() then
+		local shooter_pos, shooter_u_data = nil
+		local duration = tweak_data.group_ai.flash_grenade_lifetime
+
+		for u_key, u_data in pairs(group.units) do
+			if u_data.tactics_map and u_data.tactics_map.flash_grenade then
+				if not detonate_pos then
+					local nav_seg_id = u_data.tracker:nav_segment()
+					local nav_seg = managers.navigation._nav_segments[nav_seg_id]
+
+					for neighbour_nav_seg_id, door_list in pairs(nav_seg.neighbours) do
+						if task_data.target_areas[1].nav_segs[neighbour_nav_seg_id] then
+							local random_door_id = door_list[math.random(#door_list)]
+
+							if type(random_door_id) == "number" then
+								detonate_pos = managers.navigation._room_doors[random_door_id].center
+							else
+								detonate_pos = random_door_id:script_data().element:nav_link_end_pos()
+							end
+
+							shooter_pos = mvector3.copy(u_data.m_pos)
+							shooter_u_data = u_data
+
+							break
+						end
+					end
+				end
+
+				if detonate_pos and shooter_u_data then
+					self:detonate_smoke_grenade(detonate_pos, shooter_pos, duration, true)
+
+					task_data.use_smoke_timer = self._t + math.lerp(tweak_data.group_ai.smoke_and_flash_grenade_timeout[1], tweak_data.group_ai.smoke_and_flash_grenade_timeout[2], math.random()^0.5)
+					task_data.use_smoke = false
+
+					if shooter_u_data.char_tweak.chatter.flash_grenade and not shooter_u_data.unit:sound():speaking(self._t) then
+						u_data.unit:sound():say("d02", true)
+					end
+
+					return true
+				end
 			end
 		end
 	end
@@ -445,4 +515,16 @@ function GroupAIStateBesiege:_upd_assault_task()
 	end
 
 	self:_assign_enemy_groups_to_assault(task_data.phase)
+end
+
+function GroupAIStateBesiege:_voice_sentry()
+	for group_id, group in pairs(self._groups) do
+		for u_key, u_data in pairs(group.units) do
+			if u_data.char_tweak.chatter and u_data.char_tweak.chatter.sentry then
+				self:chk_say_enemy_chatter(u_data.unit, u_data.m_pos, "sentry")
+			else
+				
+			end
+		end
+	end
 end
