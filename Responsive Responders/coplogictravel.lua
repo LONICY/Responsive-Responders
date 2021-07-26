@@ -68,20 +68,6 @@ Hooks:PostHook(CopLogicTravel, "queue_update", "RR_queue_update", function(data,
 			chosen_sabotage_chatter = "sabotagedrill"
 		end
 	end
-	
-	if data.tactics and math_random() < 0.25 then
-		ignore_radio_rules = true 
-		ignore_skirmish_rules = true
-		if data.tactics.flank then
-			chosen_sabotage_chatter = "look_for_angle"
-		elseif data.tactics.charge then
-			if math_random() < 0.5 then
-				chosen_sabotage_chatter = "go_go"
-			else
-				chosen_sabotage_chatter = "push"
-			end
-		end
-	end
 		
 	local clear_t_chk = not data.attention_obj or not data.attention_obj.verified_t or data.attention_obj.verified_t - data.t > math_random(2.5, 5)		
 	local cant_say_clear = not data.attention_obj or AIAttentionObject.REACT_COMBAT <= data.attention_obj.reaction and clear_t_chk
@@ -101,7 +87,6 @@ Hooks:PostHook(CopLogicTravel, "queue_update", "RR_queue_update", function(data,
 			if not managers.groupai:state():chk_assault_active_atm() then
 				if data.char_tweak.chatter and data.char_tweak.chatter.controlpanic then
 					local clearchk = math_random(0, 90)
-					local say_clear = 30
 					if clearchk > 60 then
 						managers.groupai:state():chk_say_enemy_chatter( data.unit, data.m_pos, "clear" )
 					elseif clearchk > 30 then

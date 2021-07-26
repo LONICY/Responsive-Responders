@@ -7,7 +7,13 @@ local radio_prefix = {
 	l5d_ = true
 }
 
+local killdapowa = {
+	['e_so_pull_lever'] = true,
+	['e_so_pull_lever_var2'] = true
+}
+
 Hooks:PostHook(CopLogicAttack, "queue_update", "RR_queue_update", function(data, my_data)
+	local objective = data.objective
 	local hostage_count = managers.groupai:state():get_hostage_count_for_chatter() --check current hostage count
 	local chosen_panic_chatter = "controlpanic" --set default generic assault break chatter
 	local radio_voice = radio_prefix[data.unit:sound():chk_voice_prefix()]
@@ -49,15 +55,32 @@ Hooks:PostHook(CopLogicAttack, "queue_update", "RR_queue_update", function(data,
 	local skirmish_map = managers.skirmish:is_skirmish()--these shouldnt play on holdout
 	local ignore_radio_rules = nil
 	
-	if level == "branchbank" then --bank heist
-		chosen_sabotage_chatter = "sabotagedrill"
-	elseif level == "nmh" or level == "man" or level == "framing_frame_3" or level == "rat" or level == "election_day_1" then --various heists where turning off the power is a frequent occurence
-		chosen_sabotage_chatter = "sabotagepower"
-	elseif level == "chill_combat" or level == "watchdogs_1" or level == "watchdogs_1_night" or level == "watchdogs_2" or level == "watchdogs_2_day" or level == "cane" then
-		chosen_sabotage_chatter = "sabotagebags"
-		ignore_radio_rules = true
-	else
-		chosen_sabotage_chatter = "sabotagegeneric" --if none of these levels are the current one, use a generic "Break their gear!" line
+	if objective then
+		if objective.action and killdapowa[objective.action.variant] then
+			chosen_sabotage_chatter = "sabotagepower"
+		elseif objective.bagjob or objective.grp_objective and objective.grp_objective.bagjob then
+			chosen_sabotage_chatter = "sabotagebags"
+			ignore_radio_rules = true
+		elseif objective.hostagejob or objective.grp_objective and objective.grp_objective.hostagejob then
+			chosen_sabotage_chatter = "sabotagehostages"
+			ignore_radio_rules = true
+		elseif objective.drilljob then
+			chosen_sabotage_chatter = "sabotagedrill"
+		end
+	end
+	
+	if data.tactics and math_random() < 0.25 then
+		ignore_radio_rules = true 
+		ignore_skirmish_rules = true
+		if data.tactics.flank then
+			chosen_sabotage_chatter = "look_for_angle"
+		elseif data.tactics.charge then
+			if math_random() < 0.5 then
+				chosen_sabotage_chatter = "go_go"
+			else
+				chosen_sabotage_chatter = "push"
+			end
+		end
 	end
 
 	local clear_t_chk = not data.attention_obj or not data.attention_obj.verified_t or data.attention_obj.verified_t - data.t > math_random(2.5, 5)	
