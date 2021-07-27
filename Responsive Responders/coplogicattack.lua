@@ -345,12 +345,13 @@ function CopLogicAttack:inform_law_enforcements(data)
 	if managers.groupai:state()._special_unit_types[data.unit:base()._tweak_table] then
 		return
 	end
+	
 	if data.unit:in_slot(16) or not data.char_tweak.chatter then
 		return
 	end
 
 	local enemy_target = data.attention_obj
-	if not enemy_target or not enemy_target.verified then
+	if not enemy_target or not enemy_target.verified or enemy_target.dis > 100000 or not data.unit or self:_next_to_cops(data) then
 		return
 	end
 
@@ -385,19 +386,7 @@ function CopLogicAttack:inform_law_enforcements(data)
 		end
 	end
 
-	if self:_next_to_cops(data) then
-		return
-	end
-
-	if not enemy_target or enemy_target.dis > 100000 then
-		return
-	end
-	
-	if not msg_type or not self:ene_inform_has_cooldown_met(msg_type) then
-		return
-	end
-
-	if data.unit then
+	if msg_type and self:ene_inform_has_cooldown_met(msg_type) then
 		data.unit:sound():say(sound_name, true)
 		self:start_inform_ene_cooldown(cooldown_t, msg_type)
 	end
