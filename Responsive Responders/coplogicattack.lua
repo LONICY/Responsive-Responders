@@ -1,10 +1,10 @@
 local math_random = math.random
 local radio_prefix = {
-	l1d_ = true,
-	l2d_ = true,
-	l3d_ = true,
-	l4d_ = true,
-	l5d_ = true
+	['l1d_'] = true,
+	['l2d_'] = true,
+	['l3d_'] = true,
+	['l4d_'] = true,
+	['l5d_'] = true
 }
 
 local killdapowa = {
