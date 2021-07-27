@@ -69,7 +69,7 @@ Hooks:PostHook(CopLogicAttack, "queue_update", "RR_queue_update", function(data,
 		end
 	end
 	
-	if data.tactics and math_random() < 0.25 then
+	if data.tactics and math_random() < 0.5 then
 		ignore_radio_rules = true 
 		ignore_skirmish_rules = true
 		if data.tactics.flank then
