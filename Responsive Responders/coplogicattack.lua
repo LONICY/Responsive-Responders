@@ -341,7 +341,7 @@ function CopLogicAttack:_next_to_cops(data, amount)
 	return #close_peers >= amount
 end
 
-function CopLogicAttack:inform_law_enforcements(data, debug_enemy)
+function CopLogicAttack:inform_law_enforcements(data)
 	if managers.groupai:state()._special_unit_types[data.unit:base()._tweak_table] then
 		return
 	end
@@ -349,45 +349,39 @@ function CopLogicAttack:inform_law_enforcements(data, debug_enemy)
 		return
 	end
 
-	local sound_name, cooldown_t, msg_type
 	local enemy_target = data.attention_obj
-
-	if debug_enemy then
-		enemy_target = {
-			unit = debug_enemy,
-			dis = 0,
-			is_deployable = false
-		}	
+	if not enemy_target or not enemy_target.verified then
+		return
 	end
 
-	if enemy_target then
-		if enemy_target.is_deployable then
-			msg_type = "sentry_detected"
-			sound_name = "ch2" -- Every voiceset except l5n (unused)
+	local sound_name, cooldown_t, msg_type
+
+	if enemy_target.is_deployable then
+		msg_type = "sentry_detected"
+		sound_name = "ch2" -- Every voiceset except l5n (unused)
+		cooldown_t = 30
+	elseif enemy_target.unit:in_slot(managers.slot:get_mask("all_criminals")) then
+		local weapon = enemy_target.unit.inventory and enemy_target.unit:inventory():equipped_unit()
+		if weapon and weapon:base():is_category("saw") then
+			msg_type = "saw_maniac"
+			sound_name = "ch4" -- Every voiceset except l5n (unused)
 			cooldown_t = 30
-		elseif enemy_target.unit:in_slot(managers.slot:get_mask("all_criminals")) then
-			local weapon = enemy_target.unit.inventory and enemy_target.unit:inventory():equipped_unit()
-			if weapon and weapon:base():is_category("saw") then
-				msg_type = "saw_maniac"
-				sound_name = "ch4" -- Every voiceset except l5n (unused)
-				cooldown_t = 30
-			elseif self:_has_deployable_type(enemy_target.unit, "doctor_bag") then
-				msg_type = "doc_bag"
-				sound_name = "med" -- Why do only l2n, l3n and l4n have this line :/
-				cooldown_t = 30
-			elseif self:_has_deployable_type(enemy_target.unit, "first_aid_kit") then
-				msg_type = "first_aid_kit"
-				sound_name = "med" -- Why do only l2n, l3n and l4n have this line :/
-				cooldown_t = 30
-			elseif self:_has_deployable_type(enemy_target.unit, "ammo_bag") then
-				msg_type = "ammo_bag"
-				sound_name = "amm" -- All lxn voicesets 
-				cooldown_t = 30
-			elseif self:_has_deployable_type(enemy_target.unit, "trip_mine") then
-				msg_type = "trip_mine"
-				sound_name = "ch1" -- Every voiceset except l5n (unused)
-				cooldown_t = 30
-			end
+		elseif self:_has_deployable_type(enemy_target.unit, "doctor_bag") then
+			msg_type = "doc_bag"
+			sound_name = "med" -- Why do only l2n, l3n and l4n have this line :/
+			cooldown_t = 30
+		elseif self:_has_deployable_type(enemy_target.unit, "first_aid_kit") then
+			msg_type = "first_aid_kit"
+			sound_name = "med" -- Why do only l2n, l3n and l4n have this line :/
+			cooldown_t = 30
+		elseif self:_has_deployable_type(enemy_target.unit, "ammo_bag") then
+			msg_type = "ammo_bag"
+			sound_name = "amm" -- All lxn voicesets 
+			cooldown_t = 30
+		elseif self:_has_deployable_type(enemy_target.unit, "trip_mine") then
+			msg_type = "trip_mine"
+			sound_name = "ch1" -- Every voiceset except l5n (unused)
+			cooldown_t = 30
 		end
 	end
 
