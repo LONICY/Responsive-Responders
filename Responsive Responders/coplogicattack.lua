@@ -83,36 +83,31 @@ Hooks:PostHook(CopLogicAttack, "queue_update", "RR_queue_update", function(data,
 		end
 	end
 
-	local clear_t_chk = not data.attention_obj or not data.attention_obj.verified_t or data.attention_obj.verified_t - data.t > math_random(2.5, 5)	
-	local cant_say_clear = not data.attention_obj or AIAttentionObject.REACT_COMBAT <= data.attention_obj.reaction and clear_t_chk
+	local can_say_clear = not data.attention_obj or AIAttentionObject.REACT_AIM > data.attention_obj.reaction or data.attention_obj.verified_t and data.attention_obj.verified_t - data.t > math_random(2.5, 5)
 		
-	if not data.unit:base():has_tag("special") and not cant_say_clear and not data.is_converted then
-		if data.unit:movement():cool() and data.char_tweak.chatter and data.char_tweak.chatter.clear_whisper then
-			managers.groupai:state():chk_say_enemy_chatter( data.unit, data.m_pos, "clear_whisper" )
-		elseif not data.unit:movement():cool() then
-			if not managers.groupai:state():chk_assault_active_atm() then
-				if data.char_tweak.chatter and data.char_tweak.chatter.controlpanic then
-					local clearchk = math_random(0, 90)
-					local say_clear = 30
-					if clearchk > 60 then
-						managers.groupai:state():chk_say_enemy_chatter( data.unit, data.m_pos, "clear" )
-					elseif clearchk > 30 then
-						if not skirmish_map and radio_voice or not skirmish_map and ignore_radio_rules then
-							managers.groupai:state():chk_say_enemy_chatter( data.unit, data.m_pos, chosen_sabotage_chatter )
-						else
-							managers.groupai:state():chk_say_enemy_chatter( data.unit, data.m_pos, chosen_panic_chatter )
-						end
+	if not data.unit:base():has_tag("special") and can_say_clear and not data.is_converted then
+		if not managers.groupai:state():chk_assault_active_atm() then
+			if data.char_tweak.chatter and data.char_tweak.chatter.controlpanic then
+				local clearchk = math_random(0, 90)
+				local say_clear = 30
+				if clearchk > 60 then
+					managers.groupai:state():chk_say_enemy_chatter( data.unit, data.m_pos, "clear" )
+				elseif clearchk > 30 then
+					if not skirmish_map and radio_voice or not skirmish_map and ignore_radio_rules then
+						managers.groupai:state():chk_say_enemy_chatter( data.unit, data.m_pos, chosen_sabotage_chatter )
 					else
 						managers.groupai:state():chk_say_enemy_chatter( data.unit, data.m_pos, chosen_panic_chatter )
 					end
-				elseif data.char_tweak.chatter and data.char_tweak.chatter.clear then
-					managers.groupai:state():chk_say_enemy_chatter( data.unit, data.m_pos, "clear" )
+				else
+					managers.groupai:state():chk_say_enemy_chatter( data.unit, data.m_pos, chosen_panic_chatter )
 				end
+			elseif data.char_tweak.chatter and data.char_tweak.chatter.clear then
+				managers.groupai:state():chk_say_enemy_chatter( data.unit, data.m_pos, "clear" )
 			end
 		end
 	end
 	
-	if (data.unit:base():has_tag("tank") or data.unit:base():has_tag("taser")) and not cant_say_clear then
+	if (data.unit:base():has_tag("tank") or data.unit:base():has_tag("taser")) and can_say_clear then
 		managers.groupai:state():chk_say_enemy_chatter( data.unit, data.m_pos, "approachingspecial" )
 	end
 		
@@ -189,7 +184,7 @@ Hooks:PostHook(CopLogicAttack, "aim_allow_fire", "RR_aim_allow_fire", function(s
 		if not data.unit:base():has_tag("special") and data.unit:base():has_tag("law") and not data.unit:base()._tweak_table == "gensec" and not data.unit:base()._tweak_table == "security" then
 			if focus_enemy.verified and focus_enemy.verified_dis <= 500 then
 				if managers.groupai:state():chk_assault_active_atm() then
-					local roll = math.random(1, 100)
+					local roll = math_random(1, 100)
 				
 					if roll < 33 then
 						managers.groupai:state():chk_say_enemy_chatter(data.unit, data.m_pos, "aggressivecontrolsurprised1")
@@ -199,7 +194,7 @@ Hooks:PostHook(CopLogicAttack, "aim_allow_fire", "RR_aim_allow_fire", function(s
 						managers.groupai:state():chk_say_enemy_chatter(data.unit, data.m_pos, "open_fire")
 					end
 				else
-					local roll = math.random(1, 100)
+					local roll = math_random(1, 100)
 				
 					if roll <= chance_heeeeelpp then
 						managers.groupai:state():chk_say_enemy_chatter(data.unit, data.m_pos, "aggressivecontrolsurprised1")
@@ -218,7 +213,7 @@ Hooks:PostHook(CopLogicAttack, "aim_allow_fire", "RR_aim_allow_fire", function(s
 			if not data.unit:base():has_tag("tank") and data.unit:base():has_tag("medic") then
 				managers.groupai:state():chk_say_enemy_chatter(data.unit, data.m_pos, "aggressive")
 			elseif data.unit:base():has_tag("shield") then
-				local shield_knock_cooldown = math.random(6, 12)
+				local shield_knock_cooldown = math_random(6, 12)
 				if not my_data.shield_knock_cooldown or my_data.shield_knock_cooldown < data.t then
 					local diff_index = tweak_data:difficulty_to_index(Global.game_settings.difficulty)	
 					my_data.shield_knock_cooldown = data.t + shield_knock_cooldown

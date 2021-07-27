@@ -69,10 +69,9 @@ Hooks:PostHook(CopLogicTravel, "queue_update", "RR_queue_update", function(data,
 		end
 	end
 		
-	local clear_t_chk = not data.attention_obj or not data.attention_obj.verified_t or data.attention_obj.verified_t - data.t > math_random(2.5, 5)		
-	local cant_say_clear = not data.attention_obj or AIAttentionObject.REACT_COMBAT <= data.attention_obj.reaction and clear_t_chk
+	local can_say_clear = not data.attention_obj or AIAttentionObject.REACT_AIM > data.attention_obj.reaction or data.attention_obj.verified_t and data.attention_obj.verified_t - data.t > math_random(2.5, 5)
 		
-	if not data.unit:base():has_tag("special") and not cant_say_clear and not data.is_converted then
+	if not data.unit:base():has_tag("special") and can_say_clear and not data.is_converted then
 		if data.unit:movement():cool() and data.char_tweak.chatter and data.char_tweak.chatter.clear_whisper then  
 			local roll = math.rand(1, 100)
 			local whistle_chance = 50
@@ -105,7 +104,7 @@ Hooks:PostHook(CopLogicTravel, "queue_update", "RR_queue_update", function(data,
 		end
 	end
 	
-	if (data.unit:base():has_tag("tank") or data.unit:base():has_tag("taser")) and not cant_say_clear then
+	if (data.unit:base():has_tag("tank") or data.unit:base():has_tag("taser")) and can_say_clear then
 		managers.groupai:state():chk_say_enemy_chatter( data.unit, data.m_pos, "approachingspecial" )
 	end
 		
