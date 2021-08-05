@@ -19,41 +19,22 @@ Hooks:PostHook(CopLogicAttack, "queue_update", "RR_queue_update", function(data,
 	local radio_voice = radio_prefix[data.unit:sound():chk_voice_prefix()]
 	
 	if hostage_count > 0 then --make sure the hostage count is actually above zero before replacing any of the lines
-		if hostage_count > 3 then  -- hostage count needs to be above 3
-			if math_random() < 0.4 then --40% chance for regular panic if hostages are present
-				chosen_panic_chatter = "controlpanic"
-			else
-				chosen_panic_chatter = "hostagepanic2" --more panicky "GET THOSE HOSTAGES OUT RIGHT NOW!!!" line for when theres too many hostages on the map
-			end
-		else
-			if math_random() < 0.4 then
-				chosen_panic_chatter = "controlpanic"
-			else
-				chosen_panic_chatter = "hostagepanic1" --less panicky "Delay the assault until those hostages are out." line
-			end
+		if hostage_count > 3 and math_random() < 0.5 then  -- hostage count needs to be above 3
+			chosen_panic_chatter = "hostagepanic2" --more panicky "GET THOSE HOSTAGES OUT RIGHT NOW!!!" line for when theres too many hostages on the map
+		elseif managers.groupai:state():chk_has_civilian_hostages() and math_random() < 0.5 then
+			chosen_panic_chatter = "civilianpanic"
+		elseif math_random() < 0.6 then
+			chosen_panic_chatter = "hostagepanic1" --less panicky "Delay the assault until those hostages are out." line
 		end
-			
-		if managers.groupai:state():chk_has_civilian_hostages() then
-			--log("they got sausages!")
-			if math_random() < 0.5 then
-				chosen_panic_chatter = chosen_panic_chatter
-			else
-				chosen_panic_chatter = "civilianpanic"
-			end
-		end
-			
-	elseif managers.groupai:state():chk_had_hostages() then
-		if math_random() < 0.4 then
-			chosen_panic_chatter = "controlpanic"
-		else
-			chosen_panic_chatter = "hostagepanic3" -- no more hostages!!! full force!!!
-		end
+	elseif managers.groupai:state():chk_had_hostages() and math_random() < 0.6 then
+		chosen_panic_chatter = "hostagepanic3" -- no more hostages!!! full force!!!
 	end
 	
 	local level = Global.level_data and Global.level_data.level_id
 	local chosen_sabotage_chatter = "sabotagegeneric" --set default sabotage chatter for variety's sake
 	local skirmish_map = managers.skirmish:is_skirmish()--these shouldnt play on holdout
 	local ignore_radio_rules = nil
+	local ignore_skirmish_rules = nil
 	
 	if objective then
 		if objective.action and killdapowa[objective.action.variant] then
@@ -70,40 +51,41 @@ Hooks:PostHook(CopLogicAttack, "queue_update", "RR_queue_update", function(data,
 	end
 	
 	if data.tactics and math_random() < 0.5 then
-		ignore_radio_rules = true 
-		ignore_skirmish_rules = true
 		if data.tactics.flank then
 			chosen_sabotage_chatter = "look_for_angle"
+
+			ignore_radio_rules = true 
+			ignore_skirmish_rules = true
 		elseif data.tactics.charge then
 			if math_random() < 0.5 then
 				chosen_sabotage_chatter = "go_go"
 			else
 				chosen_sabotage_chatter = "push"
 			end
+
+			ignore_radio_rules = true 
+			ignore_skirmish_rules = true
 		end
 	end
 
 	local can_say_clear = not data.attention_obj or AIAttentionObject.REACT_AIM > data.attention_obj.reaction or data.attention_obj.verified_t and data.attention_obj.verified_t - data.t > math_random(2.5, 5)
 		
-	if not data.unit:base():has_tag("special") and can_say_clear and not data.is_converted then
-		if not managers.groupai:state():chk_assault_active_atm() then
-			if data.char_tweak.chatter and data.char_tweak.chatter.controlpanic then
-				local clearchk = math_random(0, 90)
-				local say_clear = 30
-				if clearchk > 60 then
-					managers.groupai:state():chk_say_enemy_chatter( data.unit, data.m_pos, "clear" )
-				elseif clearchk > 30 then
-					if not skirmish_map and radio_voice or not skirmish_map and ignore_radio_rules then
-						managers.groupai:state():chk_say_enemy_chatter( data.unit, data.m_pos, chosen_sabotage_chatter )
-					else
-						managers.groupai:state():chk_say_enemy_chatter( data.unit, data.m_pos, chosen_panic_chatter )
-					end
+	if not data.unit:base():has_tag("special") and can_say_clear and not data.is_converted and not managers.groupai:state():chk_assault_active_atm() then
+		if data.char_tweak.chatter and data.char_tweak.chatter.controlpanic then
+			local clearchk = math_random(0, 90)
+			if clearchk > 60 then
+				managers.groupai:state():chk_say_enemy_chatter( data.unit, data.m_pos, "clear" )
+			elseif clearchk > 30 then
+				if (not skirmish_map or ignore_skirmish_rules) and (radio_voice or ignore_radio_rules) then
+					managers.groupai:state():chk_say_enemy_chatter( data.unit, data.m_pos, chosen_sabotage_chatter )
 				else
 					managers.groupai:state():chk_say_enemy_chatter( data.unit, data.m_pos, chosen_panic_chatter )
 				end
-			elseif data.char_tweak.chatter and data.char_tweak.chatter.clear then
-				managers.groupai:state():chk_say_enemy_chatter( data.unit, data.m_pos, "clear" )
+			else
+				managers.groupai:state():chk_say_enemy_chatter( data.unit, data.m_pos, chosen_panic_chatter )
 			end
+		elseif data.char_tweak.chatter and data.char_tweak.chatter.clear then
+			managers.groupai:state():chk_say_enemy_chatter( data.unit, data.m_pos, "clear" )
 		end
 	end
 	
@@ -119,13 +101,8 @@ Hooks:PostHook(CopLogicAttack, "queue_update", "RR_queue_update", function(data,
 			if managers.groupai:state():chk_assault_active_atm() then
 				if managers.groupai:state():_check_assault_panic_chatter() then
 					if data.attention_obj and data.attention_obj.verified and data.attention_obj.dis <= 500 or data.is_suppressed and data.attention_obj and data.attention_obj.verified then
-						local roll = math_random(1, 100)
-						local chance_suppanic = 50
-						
-						if roll <= chance_suppanic then
-							local nroll = math_random(1, 100)
-							local chance_help = 50
-							if roll <= chance_suppanic then
+						if math_random() < 0.5 then
+							if math_random() < 0.5 then
 								managers.groupai:state():chk_say_enemy_chatter( data.unit, data.m_pos, "assaultpanicsuppressed1" )
 							else
 								managers.groupai:state():chk_say_enemy_chatter( data.unit, data.m_pos, "assaultpanicsuppressed2" )
@@ -133,35 +110,21 @@ Hooks:PostHook(CopLogicAttack, "queue_update", "RR_queue_update", function(data,
 						else
 							managers.groupai:state():chk_say_enemy_chatter( data.unit, data.m_pos, "assaultpanic" )
 						end
+					elseif math_random() < 0.2 then
+						managers.groupai:state():chk_say_enemy_chatter( data.unit, data.m_pos, chosen_sabotage_chatter )
 					else
-						if math_random() < 0.2 then
-							managers.groupai:state():chk_say_enemy_chatter( data.unit, data.m_pos, chosen_sabotage_chatter )
-						else
-							managers.groupai:state():chk_say_enemy_chatter( data.unit, data.m_pos, "assaultpanic" )
-						end
+						managers.groupai:state():chk_say_enemy_chatter( data.unit, data.m_pos, "assaultpanic" )
 					end
-				else
-					local clearchk = math_random(0, 90)
-						
-					if clearchk > 60 then
-						if not skirmish_map and radio_voice or not skirmish_map and ignore_radio_rules then
-							managers.groupai:state():chk_say_enemy_chatter( data.unit, data.m_pos, chosen_sabotage_chatter )
-						end
-					elseif chosen_panic_chatter == "civilianpanic" then
-						managers.groupai:state():chk_say_enemy_chatter( data.unit, data.m_pos, chosen_panic_chatter )
-					end
+				elseif math_random() < 0.33 and (not skirmish_map or ignore_skirmish_rules) and (radio_voice or ignore_radio_rules) then
+					managers.groupai:state():chk_say_enemy_chatter( data.unit, data.m_pos, chosen_sabotage_chatter )
+				elseif chosen_panic_chatter == "civilianpanic" then
+					managers.groupai:state():chk_say_enemy_chatter( data.unit, data.m_pos, chosen_panic_chatter )
 				end
 			end
 		elseif not data.unit:base():has_tag("special") and data.attention_obj and AIAttentionObject.REACT_COMBAT <= data.attention_obj.reaction and data.attention_obj.verified_t or not data.unit:base():has_tag("special") and data.attention_obj and AIAttentionObject.REACT_COMBAT <= data.attention_obj.reaction and data.attention_obj.alert_t then
-		
 			if data.attention_obj.verified and data.attention_obj.dis <= 500 or data.is_suppressed and data.attention_obj.verified then
-				local roll = math_random(1, 100)
-				local chance_suppanic = 50
-						
-				if roll <= chance_suppanic then
-					local nroll = math_random(1, 100)
-					local chance_help = 50
-					if roll <= chance_suppanic then
+				if math_random() < 0.5 then
+					if math_random() < 0.5 then
 						managers.groupai:state():chk_say_enemy_chatter( data.unit, data.m_pos, "assaultpanicsuppressed1" )
 					else
 						managers.groupai:state():chk_say_enemy_chatter( data.unit, data.m_pos, "assaultpanicsuppressed2" )
@@ -172,7 +135,6 @@ Hooks:PostHook(CopLogicAttack, "queue_update", "RR_queue_update", function(data,
 			else
 				managers.groupai:state():chk_say_enemy_chatter( data.unit, data.m_pos, "assaultpanic" )
 			end
-			
 		end	
 	end
 end)
@@ -188,41 +150,36 @@ Hooks:PostHook(CopLogicAttack, "aim_allow_fire", "RR_aim_allow_fire", function(s
 				
 					if roll < 33 then
 						managers.groupai:state():chk_say_enemy_chatter(data.unit, data.m_pos, "aggressivecontrolsurprised1")
-					elseif roll < 66 and roll > 33 then
+					elseif roll < 66 then
 						managers.groupai:state():chk_say_enemy_chatter(data.unit, data.m_pos, "aggressivecontrolsurprised2")
 					else
 						managers.groupai:state():chk_say_enemy_chatter(data.unit, data.m_pos, "open_fire")
 					end
 				else
-					local roll = math_random(1, 100)
-				
-					if roll <= chance_heeeeelpp then
+					if math_random() < 0.5 then
 						managers.groupai:state():chk_say_enemy_chatter(data.unit, data.m_pos, "aggressivecontrolsurprised1")
 					else --hopefully some variety here now
 						managers.groupai:state():chk_say_enemy_chatter(data.unit, data.m_pos, "aggressivecontrolsurprised2")
 					end	
 				end
+			elseif managers.groupai:state():chk_assault_active_atm() then
+				managers.groupai:state():chk_say_enemy_chatter(data.unit, data.m_pos, "open_fire")
 			else
-				if managers.groupai:state():chk_assault_active_atm() then
-					managers.groupai:state():chk_say_enemy_chatter(data.unit, data.m_pos, "open_fire")
-				else
-					managers.groupai:state():chk_say_enemy_chatter(data.unit, data.m_pos, "aggressivecontrol")
-				end
+				managers.groupai:state():chk_say_enemy_chatter(data.unit, data.m_pos, "aggressivecontrol")
 			end
 		elseif data.unit:base():has_tag("special") then
 			if not data.unit:base():has_tag("tank") and data.unit:base():has_tag("medic") then
 				managers.groupai:state():chk_say_enemy_chatter(data.unit, data.m_pos, "aggressive")
 			elseif data.unit:base():has_tag("shield") then
-				local shield_knock_cooldown = math_random(6, 12)
 				if not my_data.shield_knock_cooldown or my_data.shield_knock_cooldown < data.t then
-					local diff_index = tweak_data:difficulty_to_index(Global.game_settings.difficulty)	
-					my_data.shield_knock_cooldown = data.t + shield_knock_cooldown
-					
+					local diff_index = tweak_data:difficulty_to_index(Global.game_settings.difficulty)		
 					if diff_index < 8 then
 						data.unit:sound():play("shield_identification", nil, true)
 					else
 						data.unit:sound():play("hos_shield_indication_sound_terminator_style", nil, true)
 					end
+
+					my_data.shield_knock_cooldown = data.t + math_random(6, 12)				
 				end
 			else
 				managers.groupai:state():chk_say_enemy_chatter(data.unit, data.m_pos, "contact")
