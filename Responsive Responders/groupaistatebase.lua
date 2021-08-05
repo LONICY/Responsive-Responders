@@ -6,9 +6,9 @@ function GroupAIStateBase:_check_assault_panic_chatter()
 	return
 end
 
-local old_init = GroupAIStateBase._process_recurring_grp_SO
+local _process_recurring_grp_SO_orig = GroupAIStateBase._process_recurring_grp_SO
 function GroupAIStateBase:_process_recurring_grp_SO(...)
-	if old_init(self, ...) then
+	if _process_recurring_grp_SO_orig(self, ...) then
 		managers.hud:post_event("cloaker_spawn")
 		return true
 	end

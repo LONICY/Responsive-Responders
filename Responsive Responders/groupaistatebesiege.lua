@@ -401,13 +401,11 @@ Hooks:PostHook(GroupAIStateBesiege, "_perform_group_spawning", "RR_perform_group
 end)
 
 Hooks:PostHook(GroupAIStateBesiege, "_end_regroup_task", "RR_end_regroup_task", function(self)
-	if self._task_data.regroup.active then
-		if not self._task_data.assault.next_dispatch_t then		
-			if self._hostage_headcount > 3 then
-				self._had_hostages = true
-			else
-				self._had_hostages = nil
-			end
+	if self._task_data.assault.next_dispatch_t then		
+		if self._hostage_headcount > 3 then
+			self._had_hostages = true
+		else
+			self._had_hostages = nil
 		end
 	end
 end)
