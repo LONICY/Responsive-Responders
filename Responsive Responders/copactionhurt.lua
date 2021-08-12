@@ -244,7 +244,8 @@ function CopActionHurt:init(action_desc, common_data)
 		end
 	elseif action_type == "death" and action_desc.variant == "fire" then
 		local variant = 1
-		local variant_count = #CopActionHurt.fire_death_anim_variants_length or 5
+		local fire_variant = alive(action_desc.weapon_unit) and (tweak_data.weapon[action_desc.weapon_unit:base():get_name_id()] or tweak_data.weapon.amcar).fire_variant or "fire"
+		local variant_count = fire_variant == "money" and 10 or 5
 
 		if variant_count > 1 then
 			variant = self:_pseudorandom(variant_count)
@@ -253,7 +254,11 @@ function CopActionHurt:init(action_desc, common_data)
 		if not self._ext_movement:died_on_rope() then
 			self:_prepare_ragdoll()
 
-			redir_res = self._ext_movement:play_redirect("death_fire")
+			redir_res = self._ext_movement:play_redirect("death_" .. fire_variant)
+
+			if fire_variant == "money" and alive(self._unit) and self._unit:inventory() then
+				self._unit:inventory():set_visibility_state(false)
+			end
 
 			if not redir_res then
 				debug_pause("[CopActionHurt:init] death_fire redirect failed in", self._machine:segment_state(Idstring("base")))
@@ -274,7 +279,7 @@ function CopActionHurt:init(action_desc, common_data)
 			self:force_ragdoll()
 		end
 
-		self:_start_enemy_fire_effect_on_death(variant)
+		self:_start_enemy_fire_effect_on_death(variant, action_desc)
 		managers.fire:check_achievemnts(self._unit, t)
 	elseif action_type == "death" and action_desc.variant == "poison" then
 		self:force_ragdoll()
@@ -558,10 +563,11 @@ function CopActionHurt:init(action_desc, common_data)
 	if not self._unit:base().nick_name then
 		if action_desc.variant == "fire" then
 			if tweak_table ~= "tank" and tweak_table ~= "tank_hw" and tweak_table ~= "shield" then
+				local fire_variant = alive(action_desc.weapon_unit) and (tweak_data.weapon[action_desc.weapon_unit:base():get_name_id()] or tweak_data.weapon.amcar).fire_variant or "fire"
 				if action_desc.hurt_type == "fire_hurt" and tweak_table ~= "spooc" then
-					self._unit:sound():say("burnhurt")
+					self._unit:sound():say(fire_variant == "money" and "moneythrower_hurt" or "burnhurt", nil, fire_variant == "money")
 				elseif action_desc.hurt_type == "death" then
-					self._unit:sound():say("burndeath")
+					self._unit:sound():say(fire_variant == "money" and "moneythrower_death" or "burndeath", nil, fire_variant == "money")
 				end
 			end	
 		elseif action_type == "death" then
