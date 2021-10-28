@@ -39,7 +39,7 @@ end)
 -- to ensure they play these lines as they start moving towards their final destination, to free a hostage for example
 Hooks:PostHook(CopLogicTravel, "_chk_request_action_walk_to_advance_pos", "RR_chk_request_action_walk_to_advance_pos", function(data, my_data)
 	local objective = data.objective
-	if objective and not data.is_converted and not data.cool and not data.unit:sound():speaking(data.t) and not managers.skirmish:is_skirmish() and my_data.advancing and my_data.coarse_path_index >= #my_data.coarse_path - 1 then -- shouldn't be necessary to ensure my_data.coarse_path_index and my_data.coarse_path aren't nil
+	if objective and not data.is_converted and not data.cool and not data.unit:sound():speaking(data.t) and not managers.skirmish:is_skirmish() and my_data.advancing and my_data.coarse_path and my_data.coarse_path_index and my_data.coarse_path_index >= #my_data.coarse_path - 1 then
 		local chatter = data.char_tweak.chatter
 		local grp_objective = objective.grp_objective
 		if objective.chatter_type and chatter[objective.chatter_type] then
@@ -52,10 +52,10 @@ Hooks:PostHook(CopLogicTravel, "_chk_request_action_walk_to_advance_pos", "RR_ch
 	end
 end)
 
-Hooks:PreHook(CopLogicTravel, "_on_destination_reached", "RR_on_destination_reached", function(data, my_data)
+Hooks:PreHook(CopLogicTravel, "_on_destination_reached", "RR_on_destination_reached", function(data)
 	local objective = data.objective
 	local chatter = data.char_tweak.chatter
-	if objective.type ~= "flee" and (not objective.grp_objective or objective.grp_objective.type ~= "retire" ) and chatter and (chatter.inpos or chatter.ready) and not data.is_converted and not data.cool and not data.unit:sound():speaking(data.t) then
+	if objective.type ~= "flee" and (not objective.grp_objective or objective.grp_objective.type ~= "retire") and chatter and (chatter.inpos or chatter.ready) and not data.is_converted and not data.cool and not data.unit:sound():speaking(data.t) then
 		managers.groupai:state():chk_say_enemy_chatter(data.unit, data.m_pos, math_random() > 0.5 and "ready" or "inpos") -- Ready! / I'm in position!
 	end
 end)
