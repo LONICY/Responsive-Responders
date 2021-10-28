@@ -219,12 +219,12 @@ Hooks:PostHook(GroupAITweakData, "_init_chatter_data", "RR_init_chatter_data", f
 	self.enemy_chatter.clear = {
 		radius = 2000,
 	    max_nr = 1,
-	    duration = {60, 60},
+	    duration = {20, 20},
 	    interval = {3, 8},
 	    group_min = 1,
 	    queue = "clr"
 	}
-	self.enemy_chatter.csalpha = {
+	self.enemy_chatter.cs1 = {
 		radius = 6000,
 	    max_nr = 1,
 	    duration = {3, 4},
@@ -232,7 +232,7 @@ Hooks:PostHook(GroupAITweakData, "_init_chatter_data", "RR_init_chatter_data", f
 		group_min = 0,
 	    queue = "gr2a"
 	}
-	self.enemy_chatter.csbravo = {
+	self.enemy_chatter.cs2 = {
 		radius = 6000,
 	    max_nr = 1,
 	    duration = {3, 4},
@@ -240,7 +240,7 @@ Hooks:PostHook(GroupAITweakData, "_init_chatter_data", "RR_init_chatter_data", f
 		group_min = 0,
 	    queue = "gr2b"
 	}
-	self.enemy_chatter.cscharlie = {
+	self.enemy_chatter.cs3 = {
 		radius = 6000,
 	    max_nr = 1,
 	    duration = {3, 4},
@@ -248,7 +248,7 @@ Hooks:PostHook(GroupAITweakData, "_init_chatter_data", "RR_init_chatter_data", f
 		group_min = 0,
 	    queue = "gr2c"
 	}
-	self.enemy_chatter.csdelta = {
+	self.enemy_chatter.cs4 = {
 		radius = 6000,
 	    max_nr = 1,
 	    duration = {3, 4},
@@ -256,7 +256,7 @@ Hooks:PostHook(GroupAITweakData, "_init_chatter_data", "RR_init_chatter_data", f
 		group_min = 0,
 	    queue = "gr2d"
 	}
-	self.enemy_chatter.hrtalpha = {
+	self.enemy_chatter.hrt1 = {
 		radius = 6000,
 	    max_nr = 1,
 	    duration = {3, 4},
@@ -264,7 +264,7 @@ Hooks:PostHook(GroupAITweakData, "_init_chatter_data", "RR_init_chatter_data", f
 		group_min = 0,
 	    queue = "gr1a"
 	}
-	self.enemy_chatter.hrtbravo = {
+	self.enemy_chatter.hrt2 = {
 		radius = 6000,
 	    max_nr = 1,
 	    duration = {3, 4},
@@ -272,7 +272,7 @@ Hooks:PostHook(GroupAITweakData, "_init_chatter_data", "RR_init_chatter_data", f
 		group_min = 0,
 	    queue = "gr1b"
 	}
-	self.enemy_chatter.hrtcharlie = {
+	self.enemy_chatter.hrt3 = {
 		radius = 6000,
 	    max_nr = 1,
 	    duration = {3, 4},
@@ -280,7 +280,7 @@ Hooks:PostHook(GroupAITweakData, "_init_chatter_data", "RR_init_chatter_data", f
 		group_min = 0,
 	    queue = "gr1c"
 	}
-	self.enemy_chatter.hrtdelta = {
+	self.enemy_chatter.hrt4 = {
 		radius = 6000,
 	    max_nr = 1,
 	    duration = {3, 4},
@@ -296,7 +296,7 @@ Hooks:PostHook(GroupAITweakData, "_init_chatter_data", "RR_init_chatter_data", f
 	    group_min = 0,
 	    queue = "lk3b"
 	}
-	self.enemy_chatter.clear_whisper = {
+	self.enemy_chatter.clear_whisper_1 = {
 		radius = 2000,
 		max_nr = 1,
 		duration = {60, 60},
@@ -348,7 +348,7 @@ Hooks:PostHook(GroupAITweakData, "_init_chatter_data", "RR_init_chatter_data", f
 		radius = 2000,
 		max_nr = 16,
 		duration = {2, 4},
-		interval = {1, 3.5},
+		interval = {8, 10},
 		group_min = 1,
 		queue = "rdy"
 	}
@@ -448,71 +448,4 @@ Hooks:PostHook(GroupAITweakData, "_init_chatter_data", "RR_init_chatter_data", f
 		group_min = 0,
 		queue = "bak"
 	}
-end)
-
-Hooks:PostHook(GroupAITweakData, "_init_enemy_spawn_groups", "RR_init_enemy_spawn_groups", function(self, difficulty_index)	
-	DelayedCalls:Add('Delay', 0, function()
-		local IREnFIST_Compat = BLT.Mods:GetModByName("Ire and Fist")
-		local Old_Spawngroups_Compat = BLT.Mods:GetModByName("Pre-Hoxwarming Spawngroups")
-		if (IREnFIST_Compat and IREnFIST_Compat:IsEnabled()) and (InFmenu and InFmenu.settings.beta) or (BeardLib and BeardLib.Utils:ModLoaded("Ire and Fist")) 
-		or Old_Spawngroups_Compat and Old_Spawngroups_Compat:IsEnabled() then
-			table.insert(self._tactics.CS_swat_rifle, "groupcsr")
-			table.insert(self._tactics.CS_swat_shotgun, "groupcsr")
-			table.insert(self._tactics.CS_swat_heavy, "groupcsr")
-			table.insert(self._tactics.CS_shield, "groupcsr")
-			table.insert(self._tactics.CS_shield_flank, "groupcsr")
-			table.insert(self._tactics.CS_swat_rifle_flank, "groupcsr")
-			table.insert(self._tactics.CS_swat_shotgun_flank, "groupcsr")
-			table.insert(self._tactics.CS_swat_heavy_flank, "groupcsr")
-			table.insert(self._tactics.CS_cop_stealth, "grouphrtr")	
-			table.insert(self._tactics.FBI_suit, "grouphrtr")
-			table.insert(self._tactics.FBI_suit_stealth, "grouphrtr")
-			table.insert(self._tactics.FBI_swat_rifle, "groupcsr")
-			table.insert(self._tactics.FBI_swat_shotgun, "groupcsr")
-			table.insert(self._tactics.FBI_heavy, "groupcsr")
-			table.insert(self._tactics.FBI_shield, "groupcsr")
-			table.insert(self._tactics.FBI_shield_flank, "groupcsr")
-			table.insert(self._tactics.FBI_swat_rifle_flank, "groupcsr")
-			table.insert(self._tactics.FBI_swat_shotgun_flank, "groupcsr")
-			table.insert(self._tactics.FBI_heavy_flank, "groupcsr")
-			table.insert(self._tactics.cringe_swat_rifle, "groupcsr")
-			table.insert(self._tactics.cringe_heavy, "groupcsr")
-			table.insert(self._tactics.cringe_swat_shotgun, "groupcsr")
-			table.insert(self._tactics.cringe_swat_rifle_flank, "groupcsr")
-			table.insert(self._tactics.cringe_swat_shotgun_flank, "groupcsr")
-			table.insert(self._tactics.cringe_heavy_flank, "groupcsr")
-			table.insert(self._tactics.cringe_shield, "groupcsr")
-		else
-			if self._tactics.swat_shotgun_rush then
-				table.insert(self._tactics.swat_shotgun_rush, "groupany") -- Unused in vanilla cause the spawngroups using it are borked lmao, added because Streamlined Heisting fixes them
-			end
-			if self._tactics.swat_shotgun_flank then
-				table.insert(self._tactics.swat_shotgun_flank, "groupany") -- Unused in vanilla cause the spawngroups using it are borked lmao, added because Streamlined Heisting fixes them
-			end
-			if self._tactics.swat_rifle then		
-				table.insert(self._tactics.swat_rifle, "groupany") -- Unused in vanilla cause the spawngroups using it are borked lmao, added because Streamlined Heisting fixes them
-			end
-			if self._tactics.swat_rifle_flank then		
-				table.insert(self._tactics.swat_rifle_flank, "groupany")
-			end
-			if self._tactics.shield_wall_ranged then		
-				table.insert(self._tactics.shield_wall_ranged, "groupany")
-			end
-			if self._tactics.shield_support_ranged then		
-				table.insert(self._tactics.shield_support_ranged, "groupany")
-			end
-			if self._tactics.shield_wall_charge then		
-				table.insert(self._tactics.shield_wall_charge, "groupany")
-			end
-			if self._tactics.shield_support_charge then		
-				table.insert(self._tactics.shield_support_charge, "groupany")
-			end
-			if self._tactics.shield_wall then		
-				table.insert(self._tactics.shield_wall, "groupany")
-			end
-			
-			-- It's still shit with how Overkill has setup their tactics, but it'll work nonetheless
-			-- Overkill, stop re-using assault groups for recon groups and re-add HRTs so the rescue team lines don't play for the sake of it
-		end
-	end)
 end)

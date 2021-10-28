@@ -27,7 +27,7 @@ function Drill:_register_sabotage_SO()
 		stance = "hos",
 		haste = "run",
 		scan = true,
-		drilljob = true,
+		chatter_type = "sabotagedrill",
 		interrupt_dis = 800,
 		nav_seg = self._nav_tracker:nav_segment(),
 		area = self._SO_area,
@@ -78,3 +78,7 @@ function Drill:_register_sabotage_SO()
 
 	managers.groupai:state():add_special_objective(self._sabotage_SO_id, so_descriptor)
 end
+
+--[[Hooks:PostHook(Drill, "on_sabotage_SO_completed", "RR_on_sabotage_SO_completed", function(saboteur)
+	saboteur:sound():say("e05", true)
+end)--]]

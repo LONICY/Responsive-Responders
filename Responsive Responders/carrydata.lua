@@ -89,7 +89,7 @@ function CarryData:_chk_register_steal_SO()
 		nav_seg = pickup_nav_seg,
 		area = pickup_area,
 		pos = pickup_pos,
-		bagjob = true,
+		chatter_type = "sabotagebags",
 		fail_clbk = callback(self, self, "on_pickup_SO_failed"),
 		complete_clbk = callback(self, self, "on_pickup_SO_completed"),
 		action = {

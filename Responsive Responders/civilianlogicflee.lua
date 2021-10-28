@@ -52,7 +52,7 @@ function CivilianLogicFlee.register_rescue_SO(ignore_this, data)
 		destroy_clbk_key = false,
 		stance = "hos",
 		scan = true,
-		hostagejob = true,
+		chatter_type = "sabotagehostages",
 		interrupt_dis = 700,
 		follow_unit = data.unit,
 		pos = so_pos,

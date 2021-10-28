@@ -4,8 +4,6 @@
 	"author" : "RedFlame",
 	"contact" : "Discord: RedFlame#3870",
 	"version" : "13",
-	"priority" : "1000",
-	"blt_version" : 2,
 	"color" : "0 0 1",
 	"hooks" : [
 		{ "hook_id" : "lib/tweak_data/charactertweakdata", "script_path" : "charactertweakdata.lua" },

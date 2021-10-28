@@ -1,5 +1,6 @@
-Hooks:PostHook(CharacterTweakData, "init", "RR_Set_Enemy_Chatter", function(self)
+Hooks:PostHook(CharacterTweakData, "init", "RR_Set_Enemy_Chatter", function(self, tweak_data)
 	-- Speech prefix shit
+	local difficulty_index = tweak_data:difficulty_to_index(Global.game_settings and Global.game_settings.difficulty or "normal")
 	local job = Global.level_data and Global.level_data.level_id
 	if job == "nightclub" or job == "short2_stage1" or job == "jolly" or job == "spa" then
 		self.gangster.speech_prefix_p1 = "rt"
@@ -45,13 +46,16 @@ Hooks:PostHook(CharacterTweakData, "init", "RR_Set_Enemy_Chatter", function(self
 	self.tank_medic.spawn_sound_event = self.tank.speech_prefix_p1 .. "_entrance_elite" --ELITE BULLDOZER, COMING THROUGH!!!
 	self.tank_mini.spawn_sound_event = self.tank.speech_prefix_p1 .. "_entrance_elite" --ELITE BULLDOZER, COMING THROUGH!!!
 	self.shield.spawn_sound_event = "shield_identification" -- knock knock, it's a cocking shield
-	self.taser.spawn_sound_event = self.taser.speech_prefix_p1 .. "_entrance" -- Taser, Taser!
+	if difficulty_index >= 8 then
+		self.taser.spawn_sound_event = self.taser.speech_prefix_p1 .. "_entrance_elite" -- Elite taser, coming through!
+	else
+		self.taser.spawn_sound_event = self.taser.speech_prefix_p1 .. "_entrance" -- Taser, Taser!
+	end
 	self.sniper.spawn_sound_event = "mga_deploy_snipers"
-	-- TODO: Give Zeal tasers _entrance_elite
 
 	-- Give enemies their chatter setups
 	local chatter_setups = {
-		swat = {
+		heavy_swat = {
 			entry = true,
 			aggressive = true,
 			enemyidlepanic = true,
@@ -59,11 +63,11 @@ Hooks:PostHook(CharacterTweakData, "init", "RR_Set_Enemy_Chatter", function(self
 			retreat = true,
 			contact = true,
 			clear = true,
-			clear_whisper = true,
 			go_go = true,
 			push = true,
 			reload = true,
 			look_for_angle = true,
+			inpos = true,
 			ecm = true,
 			saw = true,
 			trip_mines = true,
@@ -74,13 +78,43 @@ Hooks:PostHook(CharacterTweakData, "init", "RR_Set_Enemy_Chatter", function(self
 			follow_me = true,
 			deathguard = true,
 			open_fire = true,
+			sabotagepower = true,
+			sabotagedrill = true,
+			sabotagegeneric = true,
+			sabotagebags = true,
+			sabotagehostages = true,
 			suppress = true,
 			dodge = true,
-			cuffed = true,
-			incomming_tank = true,
-			incomming_spooc = true,
-			incomming_shield = true,
-			incomming_taser = true
+			cuffed = true
+		},
+		swat = {
+			entry = true,
+			aggressive = true,
+			enemyidlepanic = true,
+			controlpanic = true,
+			retreat = true,
+			contact = true,
+			clear = true,
+			go_go = true,
+			push = true,
+			reload = true,
+			look_for_angle = true,
+			inpos = true,
+			ecm = true,
+			saw = true,
+			trip_mines = true,
+			sentry = true,
+			ready = true,
+			smoke = true,
+			flash_grenade = true,
+			follow_me = true,
+			deathguard = true,
+			open_fire = true,
+			sabotagebags = true,
+			sabotagehostages = true,
+			suppress = true,
+			dodge = true,
+			cuffed = true
 		},
 		gangster = {
 			aggressive = true,
@@ -97,24 +131,18 @@ Hooks:PostHook(CharacterTweakData, "init", "RR_Set_Enemy_Chatter", function(self
 			controlpanic = true,
 			clear = true,
 			clear_whisper = true,
-			clear_whisper_2 = true,
 			ecm = true,
 			saw = true,
 			trip_mines = true,
 			sentry = true,
 			suppress = true,
 			dodge = true,
-			cuffed = true,
-			incomming_tank = true,
-			incomming_spooc = true,
-			incomming_shield = true,
-			incomming_taser = true
+			cuffed = true
 		},
 		security = {
 			aggressive = true,
 			contact = true,
 			clear_whisper = true,
-			clear_whisper_2 = true,
 			ecm = true,
 			saw = true,
 			trip_mines = true,
@@ -131,6 +159,8 @@ Hooks:PostHook(CharacterTweakData, "init", "RR_Set_Enemy_Chatter", function(self
 		retreat = true,
 		approachingspecial = true
 	}
+	self.tank_medic.chatter = self.tank.chatter
+	self.tank_mini.chatter = self.tank.chatter
 	self.spooc.chatter = {
 		cloakercontact = true,
 		go_go = true, --only used for russian cloaker
@@ -144,10 +174,10 @@ Hooks:PostHook(CharacterTweakData, "init", "RR_Set_Enemy_Chatter", function(self
 		retreat = true,
 		contact = true,
 		clear = true,
-		clear_whisper = true,
 		go_go = true,
 		push = true,
 		reload = true,
+		inpos = true,
 		look_for_angle = true,
 		ecm = true,
 		saw = true,
@@ -158,11 +188,7 @@ Hooks:PostHook(CharacterTweakData, "init", "RR_Set_Enemy_Chatter", function(self
 		deathguard = true,
 		open_fire = true,
 		suppress = true,
-		cuffed = true,
-		incomming_tank = true,
-		incomming_spooc = true,
-		incomming_shield = true,
-		incomming_taser = true
+		cuffed = true
 	}
 	self.medic.chatter = {
 		aggressive = true,
@@ -176,9 +202,9 @@ Hooks:PostHook(CharacterTweakData, "init", "RR_Set_Enemy_Chatter", function(self
 	}
 	self.swat.chatter = chatter_setups.swat
 	self.fbi.chatter = chatter_setups.swat
-	self.heavy_swat.chatter = chatter_setups.swat
+	self.heavy_swat.chatter = chatter_setups.heavy_swat
 	self.fbi_swat.chatter = chatter_setups.swat
-	self.fbi_heavy_swat.chatter = chatter_setups.swat
+	self.fbi_heavy_swat.chatter = chatter_setups.heavy_swat
 	self.city_swat.chatter = chatter_setups.swat
 	self.gangster.chatter = chatter_setups.gangster
 	self.mobster.chatter = chatter_setups.gangster
