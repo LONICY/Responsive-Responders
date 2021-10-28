@@ -33,7 +33,7 @@ Hooks:PostHook(CopLogicAttack, "aim_allow_fire", "RR_aim_allow_fire", function(s
 			end
 		elseif not data.unit:base():has_tag("tank") and data.unit:base():has_tag("medic") then
 			managers.groupai:state():chk_say_enemy_chatter(data.unit, data.m_pos, "aggressive")
-		elseif data.unit:base():has_tag("shield") and not my_data.shield_knock_cooldown or my_data.shield_knock_cooldown < data.t then
+		elseif data.unit:base():has_tag("shield") and (not my_data.shield_knock_cooldown or my_data.shield_knock_cooldown < data.t) then
 			local diff_index = tweak_data:difficulty_to_index(Global.game_settings.difficulty)		
 			if diff_index < 8 then
 				data.unit:sound():play("shield_identification", nil, true)
