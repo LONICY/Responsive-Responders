@@ -1,11 +1,7 @@
 local math_random = math.random
 
 function GroupAIStateBesiege:chk_has_civilian_hostages()
-	if self._police_hostage_headcount and self._hostage_headcount > 0 then
-		if self._hostage_headcount - self._police_hostage_headcount > 0 then
-			return true
-		end
-	end
+	return self._hostage_headcount - self._police_hostage_headcount > 0
 end
 
 function GroupAIStateBesiege:chk_had_hostages()
@@ -14,24 +10,14 @@ end
 
 function GroupAIStateBesiege:chk_assault_active_atm()
 	local assault_task = self._task_data.assault
-	if assault_task and assault_task.phase == "build" or assault_task and assault_task.phase == "sustain" or assault_task and assault_task.phase == "fade" then
-		return true
-	end
-end
-
-function GroupAIStateBesiege:get_hostage_count_for_chatter()
-	if self._hostage_headcount > 0 then
-		return self._hostage_headcount
-	end
-	
-	return 0
+	return assault_task and (assault_task.phase == "build" or assault_task.phase == "sustain" or assault_task.phase == "fade")
 end
 	
 -- Assault/Rescue team going in lines
 function GroupAIStateBesiege:_voice_groupentry(group, recon)
 	local group_leader_u_key, group_leader_u_data = self._determine_group_leader(group.units)
 	if group_leader_u_data and group_leader_u_data.char_tweak.chatter.entry then
-		managers.groupai:state():chk_say_enemy_chatter(group_leader_u_data.unit, group_leader_u_data.m_pos, recon and "hrt" .. math_random(1, 4) or "cs" .. math_random(1, 4))
+		self:chk_say_enemy_chatter(group_leader_u_data.unit, group_leader_u_data.m_pos, recon and "hrt" .. math_random(1, 4) or "cs" .. math_random(1, 4))
 	end
 end
 
@@ -49,11 +35,14 @@ Hooks:PostHook(GroupAIStateBesiege, "_perform_group_spawning", "RR_perform_group
 end)
 
 Hooks:PostHook(GroupAIStateBesiege, "_end_regroup_task", "RR_end_regroup_task", function(self)
-	if self._task_data.assault.next_dispatch_t then
-		if self._hostage_headcount > 3 then
-			self._had_hostages = true
-		else
-			self._had_hostages = nil
+	self._had_hostages = self._hostage_headcount > 3
+end)
+
+Hooks:PreHook(GroupAIStateBesiege, "_assign_group_to_retire", "RR_assign_group_to_retire", function(self, group)
+	if group.objective.type == "assault_area" then
+		local group_leader_u_key, group_leader_u_data = self._determine_group_leader(group.units)
+		if group_leader_u_data and group_leader_u_data.char_tweak.chatter.retreat then
+			self:chk_say_enemy_chatter(group_leader_u_data.unit, group_leader_u_data.m_pos, "retreat")
 		end
 	end
 end)

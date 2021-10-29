@@ -42,9 +42,9 @@ Hooks:PostHook(CharacterTweakData, "init", "RR_Set_Enemy_Chatter", function(self
 	end
 
 	-- Give special enemies lines declaring they have spawned
-	self.tank.spawn_sound_event = self.tank.speech_prefix_p1 .. "_entrance" --BULLDOZER, COMING THROUGH!!!
-	self.tank_medic.spawn_sound_event = self.tank.speech_prefix_p1 .. "_entrance_elite" --ELITE BULLDOZER, COMING THROUGH!!!
-	self.tank_mini.spawn_sound_event = self.tank.speech_prefix_p1 .. "_entrance_elite" --ELITE BULLDOZER, COMING THROUGH!!!
+	self.tank.spawn_sound_event = self.tank.speech_prefix_p1 .. "_entrance" -- BULLDOZER, COMING THROUGH!!!
+	self.tank_medic.spawn_sound_event = self.tank_medic.speech_prefix_p1 .. "_entrance_elite" -- ELITE BULLDOZER, COMING THROUGH!!!
+	self.tank_mini.spawn_sound_event = self.tank_mini.speech_prefix_p1 .. "_entrance_elite" -- ELITE BULLDOZER, COMING THROUGH!!!
 	self.shield.spawn_sound_event = "shield_identification" -- knock knock, it's a cocking shield
 	if difficulty_index >= 8 then
 		self.taser.spawn_sound_event = self.taser.speech_prefix_p1 .. "_entrance_elite" -- Elite taser, coming through!
@@ -119,7 +119,6 @@ Hooks:PostHook(CharacterTweakData, "init", "RR_Set_Enemy_Chatter", function(self
 		},
 		gangster = {
 			aggressive = true,
-			retreat = true,
 			contact = true,
 			go_go = true,
 			suppress = true,
@@ -157,7 +156,6 @@ Hooks:PostHook(CharacterTweakData, "init", "RR_Set_Enemy_Chatter", function(self
 	self.tank.chatter = {
 		contact = true,
 		aggressive = true,
-		retreat = true,
 		approachingspecial = true
 	}
 	self.tank_medic.chatter = self.tank.chatter
@@ -172,7 +170,6 @@ Hooks:PostHook(CharacterTweakData, "init", "RR_Set_Enemy_Chatter", function(self
 		aggressive = true,
 		enemyidlepanic = true,
 		controlpanic = true,
-		retreat = true,
 		contact = true,
 		clear = true,
 		go_go = true,
@@ -198,7 +195,6 @@ Hooks:PostHook(CharacterTweakData, "init", "RR_Set_Enemy_Chatter", function(self
 	self.taser.chatter = {
 		contact = true,
 		aggressive = true,
-		retreat = true,
 		approachingspecial = true
 	}
 	self.swat.chatter = chatter_setups.swat

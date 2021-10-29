@@ -16,7 +16,7 @@ Hooks:PostHook(CopLogicTravel, "upd_advance", "RR_upd_advance", function(data)
 				managers.groupai:state():chk_say_enemy_chatter(data.unit, data.m_pos, math_random() > 0.5 and "clear_whisper_1" or "clear_whisper_2") -- report in saying everything is good
 			end
 		elseif objective and objective.grp_objective and objective.grp_objective.type == "recon_area" then -- we want after the loot or the hostages
-			local hostage_count = managers.groupai:state():get_hostage_count_for_chatter()
+			local hostage_count = managers.groupai:state():hostage_count()
 			if hostage_count > 0 then
 				if hostage_count > 3 then
 					managers.groupai:state():chk_say_enemy_chatter(data.unit, data.m_pos, "hostagepanic2")
