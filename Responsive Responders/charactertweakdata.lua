@@ -42,12 +42,12 @@ Hooks:PostHook(CharacterTweakData, "init", "RR_Set_Enemy_Chatter", function(self
 	end
 
 	-- overkill please fix
-	self.gensec.speech_prefix_p1 = self._prefix_data_p1.cop()
-	self.cop.speech_prefix_p1 = self._prefix_data_p1.cop() -- no idea why this fucker is tied to swat
-	self.cop_scared.speech_prefix_p1 = self._prefix_data_p1.cop() -- no idea why this fucker is tied to swat
-	self.fbi.speech_prefix_p1 = self._prefix_data_p1.cop() -- no idea why this fucker is tied to swat
-	self.sniper.speech_prefix_p1 = self._prefix_data_p1.swat()
-	self.shield.speech_prefix_p1 = self._prefix_data_p1.heavy_swat()
+	self.gensec.speech_prefix_p1 = self._unit_prefixes.cop
+	self.cop.speech_prefix_p1 = self._unit_prefixes.cop -- no idea why this fucker is tied to swat
+	self.cop_scared.speech_prefix_p1 = self._unit_prefixes.cop -- no idea why this fucker is tied to swat
+	self.fbi.speech_prefix_p1 = self._unit_prefixes.cop -- no idea why this fucker is tied to swat
+	self.sniper.speech_prefix_p1 = self._unit_prefixes.swat
+	self.shield.speech_prefix_p1 = self._unit_prefixes.heavy_swat
 
 	-- Give special enemies lines declaring they have spawned
 	self.tank.spawn_sound_event = self.tank.speech_prefix_p1 .. "_entrance" -- BULLDOZER, COMING THROUGH!!!
