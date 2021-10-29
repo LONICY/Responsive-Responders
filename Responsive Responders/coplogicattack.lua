@@ -16,8 +16,8 @@ end)
 
 Hooks:PreHook(CopLogicAttack, "action_complete_clbk", "RR_action_complete_clbk", function(data, action)
 	local chatter = data.char_tweak.chatter
-	if chatter and chatter.inpos and not data.is_converted and not data.unit:sound():speaking(TimerManager:game():time()) and action:type() == "walk" and data.internal_data.moving_to_cover and action:expired() then -- can't use data.t as this might get called outside an update
-		managers.groupai:state():chk_say_enemy_chatter(data.unit, data.m_pos, "inpos") -- In position!
+	if action:type() == "walk" and data.internal_data.moving_to_cover and action:expired() and chatter and (chatter.inpos or chatter.ready) and not data.is_converted and not data.unit:sound():speaking(TimerManager:game():time()) then -- can't use data.t as this might get called outside an update
+		managers.groupai:state():chk_say_enemy_chatter(data.unit, data.m_pos, math_random() > 0.5 and "ready" or "inpos") -- Ready! / I'm in position!
 	end
 end)
 
@@ -28,17 +28,16 @@ Hooks:PostHook(CopLogicAttack, "aim_allow_fire", "RR_aim_allow_fire", function(s
 				if managers.groupai:state():chk_assault_active_atm() then
 					managers.groupai:state():chk_say_enemy_chatter(data.unit, data.m_pos, "open_fire")
 				else
-					managers.groupai:state():chk_say_enemy_chatter(data.unit, data.m_pos, "aggressivecontrol")
+					managers.groupai:state():chk_say_enemy_chatter(data.unit, data.m_pos, "contact")
 				end
 			end
 		elseif not data.unit:base():has_tag("tank") and data.unit:base():has_tag("medic") then
 			managers.groupai:state():chk_say_enemy_chatter(data.unit, data.m_pos, "aggressive")
 		elseif data.unit:base():has_tag("shield") and (not my_data.shield_knock_cooldown or my_data.shield_knock_cooldown < data.t) then
-			local diff_index = tweak_data:difficulty_to_index(Global.game_settings.difficulty)		
-			if diff_index < 8 then
-				data.unit:sound():play("shield_identification", nil, true)
-			else
+			if tweak_data:difficulty_to_index(Global.game_settings.difficulty) >= 8 then
 				data.unit:sound():play("hos_shield_indication_sound_terminator_style", nil, true)
+			else
+				data.unit:sound():play("shield_identification", nil, true)
 			end
 
 			my_data.shield_knock_cooldown = data.t + math_random(6, 12)
@@ -116,7 +115,6 @@ function CopLogicAttack:_has_deployable_type(unit, deployable)
 	local synced_deployable_equipment = managers.player:get_synced_deployable_equipment(peer_id)
 
 	if synced_deployable_equipment then
-
 		if not synced_deployable_equipment.deployable or synced_deployable_equipment.deployable ~= deployable then
 			return false
 		end

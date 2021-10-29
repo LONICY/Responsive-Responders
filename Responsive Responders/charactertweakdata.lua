@@ -81,6 +81,7 @@ Hooks:PostHook(CharacterTweakData, "init", "RR_Set_Enemy_Chatter", function(self
 			sabotagepower = true,
 			sabotagedrill = true,
 			sabotagegeneric = true,
+			sabotagegear = true,
 			sabotagebags = true,
 			sabotagehostages = true,
 			suppress = true,
