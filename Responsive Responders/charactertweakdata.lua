@@ -41,6 +41,14 @@ Hooks:PostHook(CharacterTweakData, "init", "RR_Set_Enemy_Chatter", function(self
 		end
 	end
 
+	-- overkill please fix
+	self.gensec.speech_prefix_p1 = self._prefix_data_p1.cop()
+	self.cop.speech_prefix_p1 = self._prefix_data_p1.cop() -- no idea why this fucker is tied to swat
+	self.cop_scared.speech_prefix_p1 = self._prefix_data_p1.cop() -- no idea why this fucker is tied to swat
+	self.fbi.speech_prefix_p1 = self._prefix_data_p1.cop() -- no idea why this fucker is tied to swat
+	self.sniper.speech_prefix_p1 = self._prefix_data_p1.swat()
+	self.shield.speech_prefix_p1 = self._prefix_data_p1.heavy_swat()
+
 	-- Give special enemies lines declaring they have spawned
 	self.tank.spawn_sound_event = self.tank.speech_prefix_p1 .. "_entrance" -- BULLDOZER, COMING THROUGH!!!
 	self.tank_medic.spawn_sound_event = self.tank_medic.speech_prefix_p1 .. "_entrance_elite" -- ELITE BULLDOZER, COMING THROUGH!!!
