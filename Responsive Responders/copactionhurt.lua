@@ -17,5 +17,7 @@ function CopActionHurt:init(action_desc, ...)
 				end
 			end
 		end
+		
+		return true
 	end
 end
