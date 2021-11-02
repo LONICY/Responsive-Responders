@@ -1,5 +1,7 @@
 local math_random = math.random
 
+local react_combat = AIAttentionObject.REACT_COMBAT
+
 Hooks:PostHook(CopLogicAttack, "_upd_combat_movement", "RR_upd_combat_movement", function(data)
 	local chatter = data.char_tweak.chatter
 	if data.internal_data.flank_cover and chatter and chatter.look_for_angle and not data.is_converted and not data.unit:sound():speaking(data.t) then
@@ -16,57 +18,64 @@ end)
 
 Hooks:PreHook(CopLogicAttack, "action_complete_clbk", "RR_action_complete_clbk", function(data, action)
 	local chatter = data.char_tweak.chatter
-	if action:type() == "walk" and data.internal_data.moving_to_cover and action:expired() and chatter and (chatter.inpos or chatter.ready) and not data.is_converted and not data.unit:sound():speaking(TimerManager:game():time()) then -- can't use data.t as this might get called outside an update
+	if action:type() == "walk" and data.internal_data.moving_to_cover and action:expired() and chatter and (chatter.inpos or chatter.ready) and not data.is_converted and not data.unit:sound():speaking(TimerManager:game():time()) then -- can't use data.t as this gets called outside an update
 		managers.groupai:state():chk_say_enemy_chatter(data.unit, data.m_pos, math_random() > 0.5 and "ready" or "inpos") -- Ready! / I'm in position!
 	end
 end)
 
-Hooks:PostHook(CopLogicAttack, "aim_allow_fire", "RR_aim_allow_fire", function(shoot, aim, data, my_data)
-	if shoot and my_data.firing and not data.unit:in_slot(16) and not data.is_converted and data.char_tweak and data.char_tweak.chatter and data.char_tweak.chatter.aggressive then
-		if not data.unit:base():has_tag("special") then 
-			if data.unit:base():has_tag("law") and data.unit:base()._tweak_table ~= "gensec" and data.unit:base()._tweak_table ~= "security" then
-				if managers.groupai:state():chk_assault_active_atm() then
-					managers.groupai:state():chk_say_enemy_chatter(data.unit, data.m_pos, "open_fire")
+function CopLogicAttack.aim_allow_fire(shoot, aim, data, my_data) -- doesn't really work as a posthook
+	local focus_enemy = data.attention_obj
+
+	if shoot then
+		if not my_data.firing then
+			data.unit:movement():set_allow_fire(true)
+
+			my_data.firing = true
+
+			local chatter = data.char_tweak.chatter
+			if not data.unit:in_slot(16) and not data.is_converted and chatter and chatter.aggressive then
+				if not data.unit:base():has_tag("special") then 
+					if data.unit:base():has_tag("law") and data.unit:base()._tweak_table ~= "gensec" and data.unit:base()._tweak_table ~= "security" then
+						if managers.groupai:state():chk_assault_active_atm() then
+							managers.groupai:state():chk_say_enemy_chatter(data.unit, data.m_pos, "open_fire")
+						else
+							managers.groupai:state():chk_say_enemy_chatter(data.unit, data.m_pos, "aggressive")
+						end
+					end
+				elseif not data.unit:base():has_tag("tank") and data.unit:base():has_tag("medic") then
+					managers.groupai:state():chk_say_enemy_chatter(data.unit, data.m_pos, "aggressive")
+				elseif data.unit:base():has_tag("shield") and (not my_data.shield_knock_cooldown or my_data.shield_knock_cooldown < data.t) then
+					if tweak_data:difficulty_to_index(Global.game_settings.difficulty) >= 8 then
+						data.unit:sound():play("hos_shield_indication_sound_terminator_style", nil, true)
+					else
+						data.unit:sound():play("shield_identification", nil, true)
+					end
+
+					my_data.shield_knock_cooldown = data.t + math_random(6, 12)
 				else
 					managers.groupai:state():chk_say_enemy_chatter(data.unit, data.m_pos, "contact")
 				end
 			end
-		elseif not data.unit:base():has_tag("tank") and data.unit:base():has_tag("medic") then
-			managers.groupai:state():chk_say_enemy_chatter(data.unit, data.m_pos, "aggressive")
-		elseif data.unit:base():has_tag("shield") and (not my_data.shield_knock_cooldown or my_data.shield_knock_cooldown < data.t) then
-			if tweak_data:difficulty_to_index(Global.game_settings.difficulty) >= 8 then
-				data.unit:sound():play("hos_shield_indication_sound_terminator_style", nil, true)
-			else
-				data.unit:sound():play("shield_identification", nil, true)
-			end
-
-			my_data.shield_knock_cooldown = data.t + math_random(6, 12)
-		else
-			managers.groupai:state():chk_say_enemy_chatter(data.unit, data.m_pos, "contact")
 		end
+	elseif my_data.firing then
+		data.unit:movement():set_allow_fire(false)
+
+		my_data.firing = nil
 	end
-end)
+end
 
 Hooks:PostHook(CopLogicAttack, "_upd_aim", "RR_upd_aim", function(data)
 	local focus_enemy = data.attention_obj
-	if focus_enemy and focus_enemy.is_person and AIAttentionObject.REACT_COMBAT <= data.attention_obj.reaction and not data.unit:in_slot(16) and not data.is_converted then
+	if focus_enemy and focus_enemy.is_person and react_combat <= focus_enemy.reaction and not data.unit:in_slot(16) and not data.is_converted then
 		if focus_enemy.is_local_player then
-			local time_since_verify = data.attention_obj.verified_t and data.t - data.attention_obj.verified_t
 			local e_movement_state = focus_enemy.unit:movement():current_state()
-
-			if e_movement_state:_is_reloading() and time_since_verify and time_since_verify < 2 then
-				if not data.unit:in_slot(16) and data.char_tweak.chatter.reload then
-					managers.groupai:state():chk_say_enemy_chatter(data.unit, data.m_pos, "reload")
-				end
+			if e_movement_state:_is_reloading() and TimerManager:game():time() - focus_enemy.verified_t < 2 and not data.unit:in_slot(16) and data.char_tweak.chatter.reload then -- can't use data.t as this sometimes gets called outside an update
+				managers.groupai:state():chk_say_enemy_chatter(data.unit, data.m_pos, "reload")
 			end
 		else
 			local e_anim_data = focus_enemy.unit:anim_data()
-			local time_since_verify = data.attention_obj.verified_t and data.t - data.attention_obj.verified_t
-
-			if e_anim_data.reload and time_since_verify and time_since_verify < 2 then
-				if not data.unit:in_slot(16) and data.char_tweak.chatter.reload then
-					managers.groupai:state():chk_say_enemy_chatter(data.unit, data.m_pos, "reload")
-				end			
+			if e_anim_data.reload and TimerManager:game():time() - focus_enemy.verified_t < 2 and not data.unit:in_slot(16) and data.char_tweak.chatter.reload then -- can't use data.t as this sometimes gets called outside an update
+				managers.groupai:state():chk_say_enemy_chatter(data.unit, data.m_pos, "reload")
 			end
 		end
 	end

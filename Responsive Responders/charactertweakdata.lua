@@ -28,8 +28,8 @@ Hooks:PostHook(CharacterTweakData, "init", "RR_Set_Enemy_Chatter", function(self
 	self.biker.speech_prefix_p2 = nil
 	self.biker.speech_prefix_count = 2
 	
-	if self.tweak_data and self.tweak_data.levels then
-		local faction = self.tweak_data.levels:get_ai_group_type()			
+	if tweak_data and tweak_data.levels then
+		local faction = tweak_data.levels:get_ai_group_type()			
 		if faction == "america" then
 			-- Removed some radio filtered voices due to the player equipment lines
 			-- I am not interested in adding an option for the radio voices so don't bug me about it
@@ -46,7 +46,7 @@ Hooks:PostHook(CharacterTweakData, "init", "RR_Set_Enemy_Chatter", function(self
 	self.cop.speech_prefix_p1 = self._unit_prefixes.cop -- no idea why this fucker is tied to swat
 	self.cop_scared.speech_prefix_p1 = self._unit_prefixes.cop -- no idea why this fucker is tied to swat
 	self.fbi.speech_prefix_p1 = self._unit_prefixes.cop -- no idea why this fucker is tied to swat
-	self.sniper.speech_prefix_p1 = self._unit_prefixes.swat
+	self.sniper.speech_prefix_p1 = self._unit_prefixes.cop -- unfiltered voice
 	self.shield.speech_prefix_p1 = self._unit_prefixes.heavy_swat
 
 	-- Give special enemies lines declaring they have spawned

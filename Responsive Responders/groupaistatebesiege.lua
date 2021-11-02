@@ -17,7 +17,7 @@ end
 function GroupAIStateBesiege:_voice_groupentry(group, recon)
 	local group_leader_u_key, group_leader_u_data = self._determine_group_leader(group.units)
 	if group_leader_u_data and group_leader_u_data.char_tweak.chatter.entry then
-		self:chk_say_enemy_chatter(group_leader_u_data.unit, group_leader_u_data.m_pos, recon and "hrt" .. math_random(1, 4) or "cs" .. math_random(1, 4))
+		self:chk_say_enemy_chatter(group_leader_u_data.unit, group_leader_u_data.m_pos, (recon and "hrt" or "cs") .. math_random(1, 4))
 	end
 end
 
@@ -39,7 +39,7 @@ Hooks:PostHook(GroupAIStateBesiege, "_end_regroup_task", "RR_end_regroup_task", 
 end)
 
 Hooks:PreHook(GroupAIStateBesiege, "_assign_group_to_retire", "RR_assign_group_to_retire", function(self, group)
-	if group.objective.type == "assault_area" then
+	if group.objective.type == "assault_area" then -- doesn't check whether the group actually successfully gets a retire objective after this function, but it works fine to just announce assault end
 		local group_leader_u_key, group_leader_u_data = self._determine_group_leader(group.units)
 		if group_leader_u_data and group_leader_u_data.char_tweak.chatter.retreat then
 			self:chk_say_enemy_chatter(group_leader_u_data.unit, group_leader_u_data.m_pos, "retreat")

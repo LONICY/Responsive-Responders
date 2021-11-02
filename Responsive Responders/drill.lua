@@ -80,5 +80,5 @@ function Drill:_register_sabotage_SO()
 end
 
 Hooks:PostHook(Drill, "on_sabotage_SO_completed", "RR_on_sabotage_SO_completed", function(self, saboteur)
-	saboteur:sound():say(self.is_drill and "e05" or "e06", true)
+	saboteur:sound():say(self.is_drill and "e05" or "e06", true) -- Drill disabled, over / Gear disabled
 end)
