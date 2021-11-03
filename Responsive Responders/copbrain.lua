@@ -7,13 +7,9 @@ function CopBrain:on_suppressed(state)
 
 		if self._logic_data.char_tweak.chatter.suppress then
 			if managers.groupai:state():chk_assault_active_atm() then
-				if math_random() > 0.5 then
-					self._unit:sound():say("hlp", true)
-				else --hopefully some variety here now
-					self._unit:sound():say("lk3a", true)
-				end
+				self._unit:sound():say(math_random() > 0.5 and "hlp" or "lk3a", true)
 			else
-			   self._unit:sound():say("lk3b", true) --calmer lines for when the assault is off
+				self._unit:sound():say("lk3b", true) --calmer lines for when the assault is off
 			end
 		end
 	end

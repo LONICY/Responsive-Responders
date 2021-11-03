@@ -132,13 +132,7 @@ function CopSound:say(sound_name, sync, skip_prefix, important, callback)
 		end
 	end
 
-	if not full_sound then
-		if skip_prefix then
-			full_sound = sound_name
-		else
-			full_sound = self._prefix .. sound_name
-		end
-	end
+	full_sound = not full_sound and skip_prefix and sound_name or self._prefix .. sound_name
 
 	local event_id = nil
 

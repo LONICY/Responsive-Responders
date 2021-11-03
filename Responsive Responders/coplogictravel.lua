@@ -1,6 +1,6 @@
 local killdapowa = {
-	['e_so_pull_lever'] = true,
-	['e_so_pull_lever_var2'] = true
+	["e_so_pull_lever"] = true,
+	["e_so_pull_lever_var2"] = true
 }
 local math_random = math.random
 local react_aim = AIAttentionObject.REACT_AIM
