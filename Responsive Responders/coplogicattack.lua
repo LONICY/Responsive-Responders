@@ -66,7 +66,7 @@ end
 
 Hooks:PostHook(CopLogicAttack, "_upd_aim", "RR_upd_aim", function(data)
 	local focus_enemy = data.attention_obj
-	if focus_enemy and focus_enemy.is_person and react_combat <= focus_enemy.reaction and not data.unit:in_slot(16) and not data.is_converted then
+	if focus_enemy and focus_enemy.is_person and react_combat <= focus_enemy.reaction and focus_enemy.verified_t and not data.unit:in_slot(16) and not data.is_converted then
 		if focus_enemy.is_local_player then
 			local e_movement_state = focus_enemy.unit:movement():current_state()
 			if e_movement_state:_is_reloading() and TimerManager:game():time() - focus_enemy.verified_t < 2 and not data.unit:in_slot(16) and data.char_tweak.chatter.reload then -- can't use data.t as this sometimes gets called outside an update
