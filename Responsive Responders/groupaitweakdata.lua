@@ -280,27 +280,36 @@ Hooks:PostHook(GroupAITweakData, "_init_chatter_data", "RR_init_chatter_data", f
 		group_min = 0,
 		queue = "d02"
 	}
-	self.enemy_chatter.ecm = {
-		radius = 1000,
-		max_nr = 20,
-		duration = {2, 4},
-		interval = {0.75, 1.5},
-		group_min = 0,
-		queue = "ch3"
-	}
 	self.enemy_chatter.saw = {
 		radius = 2000,
 		max_nr = 10,
 		duration = {2, 4},
-		interval = {4, 10},
+		interval = {20, 30},
 		group_min = 0,
 		queue = "ch4"
 	}
-	self.enemy_chatter.trip_mines = {
+	self.enemy_chatter.ammo_bag = {
 		radius = 2000,
 		max_nr = 10,
 		duration = {2, 4},
-		interval = {0.75, 1.5},
+		interval = {20, 30},
+		group_min = 0,
+		queue = "amm"
+	}
+	self.enemy_chatter.doctor_bag = {
+		radius = 2000,
+		max_nr = 10,
+		duration = {2, 4},
+		interval = {20, 30},
+		group_min = 0,
+		queue = "med"
+	}
+	self.enemy_chatter.first_aid_kit = self.enemy_chatter.doctor_bag
+	self.enemy_chatter.trip_mine = {
+		radius = 2000,
+		max_nr = 10,
+		duration = {2, 4},
+		interval = {20, 30},
 		group_min = 0,
 		queue = "ch1"
 	}
@@ -308,8 +317,9 @@ Hooks:PostHook(GroupAITweakData, "_init_chatter_data", "RR_init_chatter_data", f
 		radius = 2000,
 		max_nr = 10,
 		duration = {2, 4},
-		interval = {4, 10},
+		interval = {20, 30},
 		group_min = 0,
 		queue = "ch2"
 	}
+	self.enemy_chatter.sentry_gun_silent = self.enemy_chatter.sentry
 end)
