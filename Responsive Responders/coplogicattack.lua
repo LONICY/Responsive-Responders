@@ -67,6 +67,7 @@ end
 local excluded_deployables = {
 	["trip_mine"] = true,
 	["sentry"] = true,
+	["sentry_gun_silent"] = true,
 }
 
 Hooks:PostHook(CopLogicAttack, "_upd_aim", "RR_upd_aim", function(data)

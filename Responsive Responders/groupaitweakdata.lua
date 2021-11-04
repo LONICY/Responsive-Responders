@@ -321,5 +321,4 @@ Hooks:PostHook(GroupAITweakData, "_init_chatter_data", "RR_init_chatter_data", f
 		group_min = 0,
 		queue = "ch2"
 	}
-	self.enemy_chatter.sentry_gun_silent = self.enemy_chatter.sentry
 end)

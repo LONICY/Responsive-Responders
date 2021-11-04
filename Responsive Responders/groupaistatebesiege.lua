@@ -47,30 +47,36 @@ end)
 
 function GroupAIStateBesiege:_voice_saw(dead_unit)
 	local dead_unit_u_key = dead_unit:key()
-	local group = self._police[dead_unit_u_key].group
-	for u_key, unit_data in pairs(group.units) do
-		if dead_unit_u_key ~= u_key and unit_data.char_tweak.chatter.saw and self:chk_say_enemy_chatter(unit_data.unit, unit_data.m_pos, "saw") then
-			break
+	local group = self._police[dead_unit_u_key] and self._police[dead_unit_u_key].group
+	if group then
+		for u_key, unit_data in pairs(group.units) do
+			if dead_unit_u_key ~= u_key and unit_data.char_tweak.chatter.saw and self:chk_say_enemy_chatter(unit_data.unit, unit_data.m_pos, "saw") then
+				break
+			end
 		end
 	end
 end
 
 function GroupAIStateBesiege:_voice_trip_mine(dead_unit)
 	local dead_unit_u_key = dead_unit:key()
-	local group = self._police[dead_unit_u_key].group
-	for u_key, unit_data in pairs(group.units) do
-		if dead_unit_u_key ~= u_key and unit_data.char_tweak.chatter.trip_mine and self:chk_say_enemy_chatter(unit_data.unit, unit_data.m_pos, "trip_mine") then
-			break
+	local group = self._police[dead_unit_u_key] and self._police[dead_unit_u_key].group
+	if group then
+		for u_key, unit_data in pairs(group.units) do
+			if dead_unit_u_key ~= u_key and unit_data.char_tweak.chatter.trip_mine and self:chk_say_enemy_chatter(unit_data.unit, unit_data.m_pos, "trip_mine") then
+				break
+			end
 		end
 	end
 end
 
 function GroupAIStateBesiege:_voice_sentry(dead_unit)
 	local dead_unit_u_key = dead_unit:key()
-	local group = self._police[dead_unit_u_key].group
-	for u_key, unit_data in pairs(group.units) do
-		if dead_unit_u_key ~= u_key and unit_data.char_tweak.chatter.sentry and self:chk_say_enemy_chatter(unit_data.unit, unit_data.m_pos, "sentry") then
-			break
+	local group = self._police[dead_unit_u_key] and self._police[dead_unit_u_key].group
+	if group then
+		for u_key, unit_data in pairs(group.units) do
+			if dead_unit_u_key ~= u_key and unit_data.char_tweak.chatter.sentry and self:chk_say_enemy_chatter(unit_data.unit, unit_data.m_pos, "sentry") then
+				break
+			end
 		end
 	end
 end
