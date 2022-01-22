@@ -55,7 +55,7 @@ Hooks:PostHook(CharacterTweakData, "init", "RR_Set_Enemy_Chatter", function(self
 	self.tank_mini.spawn_sound_event = self.tank_mini.speech_prefix_p1 .. "_entrance_elite" -- ELITE BULLDOZER, COMING THROUGH!!!
 	self.shield.spawn_sound_event = "shield_identification" -- knock knock, it's a cocking shield
 	if difficulty_index >= 8 then
-		self.taser.spawn_sound_event = self.taser.speech_prefix_p1 .. "_entrance_elite" -- Elite taser, coming through!
+		self.taser.spawn_sound_event = self.taser.speech_prefix_p1 .. "_elite" -- Elite taser, coming through!
 	else
 		self.taser.spawn_sound_event = self.taser.speech_prefix_p1 .. "_entrance" -- Taser, Taser!
 	end
