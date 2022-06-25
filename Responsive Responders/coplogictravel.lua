@@ -36,17 +36,12 @@ Hooks:PostHook(CopLogicTravel, "upd_advance", "RR_upd_advance", function(data)
 	end
 end)
 
--- to ensure they play these lines as they start moving towards their final destination, to free a hostage for example
+-- to ensure they play these lines as they start moving towards their final destination
 Hooks:PostHook(CopLogicTravel, "_chk_request_action_walk_to_advance_pos", "RR_chk_request_action_walk_to_advance_pos", function(data, my_data)
 	local objective = data.objective
 	local chatter = data.char_tweak.chatter
 	if chatter and objective and not data.is_converted and not data.cool and not managers.skirmish:is_skirmish() and my_data.advancing and my_data.coarse_path and my_data.coarse_path_index >= #my_data.coarse_path - 1 then
-		local grp_objective = objective.grp_objective
-		if objective.chatter_type and chatter[objective.chatter_type] then
-			managers.groupai:state():chk_say_enemy_chatter(data.unit, data.m_pos, objective.chatter_type)
-		elseif grp_objective and grp_objective.chatter_type and chatter[grp_objective.chatter_type] then
-			managers.groupai:state():chk_say_enemy_chatter(data.unit, data.m_pos, grp_objective.chatter_type)
-		elseif objective.action and killdapowa[objective.action.variant] and chatter.sabotagepower then -- best way i can think of implementing this at the moment
+		if objective.action and killdapowa[objective.action.variant] and chatter.sabotagepower then -- best way i can think of implementing this at the moment
 			managers.groupai:state():chk_say_enemy_chatter(data.unit, data.m_pos, "sabotagepower")
 		end
 	end

@@ -22,15 +22,10 @@ function GroupAIStateBesiege:_voice_groupentry(group, recon)
 end
 
 Hooks:PreHook(GroupAIStateBesiege, "_set_objective_to_enemy_group", "RR_set_objective_to_enemy_group", function(self, group, grp_objective)
-	if grp_objective.type == "recon_area" then -- new objective is recon_area
-		local target_area = grp_objective.target_area or grp_objective.area
-		grp_objective.chatter_type = target_area and (target_area.loot and "sabotagebags" or target_area.hostages and "sabotagehostages")
-	elseif group.objective.type == "assault_area" then -- current objective is assault_area
-		if grp_objective.type == "retire" then -- new objective is retire
-			local group_leader_u_key, group_leader_u_data = self._determine_group_leader(group.units)
-			if group_leader_u_data and group_leader_u_data.char_tweak.chatter.retreat then
-				self:chk_say_enemy_chatter(group_leader_u_data.unit, group_leader_u_data.m_pos, "retreat") -- declare our retreat if we were assaulting but now retiring
-			end
+	if group.objective.type == "assault_area" and grp_objective.type == "retire" then -- current objective is assault_area and new objective is retire
+		local group_leader_u_key, group_leader_u_data = self._determine_group_leader(group.units)
+		if group_leader_u_data and group_leader_u_data.char_tweak.chatter.retreat then
+			self:chk_say_enemy_chatter(group_leader_u_data.unit, group_leader_u_data.m_pos, "retreat") -- declare our retreat if we were assaulting but now retiring
 		end
 	end
 end)
@@ -44,6 +39,14 @@ end)
 Hooks:PostHook(GroupAIStateBesiege, "_end_regroup_task", "RR_end_regroup_task", function(self)
 	self._had_hostages = self._hostage_headcount > 3
 end)
+
+function GroupAIStateBesiege:_voice_open_fire_start(group)
+	for u_key, unit_data in pairs(group.units) do
+		if unit_data.char_tweak.chatter.open_fire and self:chk_say_enemy_chatter(unit_data.unit, unit_data.m_pos, "open_fire") then
+			break
+		end
+	end
+end
 
 function GroupAIStateBesiege:_voice_saw(dead_unit)
 	local dead_unit_u_key = dead_unit:key()

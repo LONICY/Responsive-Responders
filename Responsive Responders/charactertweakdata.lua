@@ -19,7 +19,7 @@ Hooks:PostHook(CharacterTweakData, "init", "RR_Set_Enemy_Chatter", function(self
 		self.gangster.speech_prefix_p2 = nil
 		self.gangster.speech_prefix_count = 2
 	end
-	
+
 	-- No, they weren't supposed to sound like cops
 	self.mobster.speech_prefix_p1 = "rt"
 	self.mobster.speech_prefix_p2 = nil
@@ -27,7 +27,7 @@ Hooks:PostHook(CharacterTweakData, "init", "RR_Set_Enemy_Chatter", function(self
 	self.biker.speech_prefix_p1 = "bik"
 	self.biker.speech_prefix_p2 = nil
 	self.biker.speech_prefix_count = 2
-	
+
 	if tweak_data and tweak_data.levels then
 		local faction = tweak_data.levels:get_ai_group_type()			
 		if faction == "america" then
@@ -54,88 +54,90 @@ Hooks:PostHook(CharacterTweakData, "init", "RR_Set_Enemy_Chatter", function(self
 	self.tank_medic.spawn_sound_event = self.tank_medic.speech_prefix_p1 .. "_entrance_elite" -- ELITE BULLDOZER, COMING THROUGH!!!
 	self.tank_mini.spawn_sound_event = self.tank_mini.speech_prefix_p1 .. "_entrance_elite" -- ELITE BULLDOZER, COMING THROUGH!!!
 	self.shield.spawn_sound_event = "shield_identification" -- knock knock, it's a cocking shield
+
 	if difficulty_index >= 8 then
 		self.taser.spawn_sound_event = self.taser.speech_prefix_p1 .. "_elite" -- Elite taser, coming through!
 	else
 		self.taser.spawn_sound_event = self.taser.speech_prefix_p1 .. "_entrance" -- Taser, Taser!
 	end
+
 	self.sniper.spawn_sound_event = "mga_deploy_snipers"
 
-	-- Give enemies their chatter setups
-	local chatter_setups = {
-		heavy_swat = {
-			entry = true,
-			aggressive = true,
-			retreat = true,
-			contact = true,
-			clear = true,
-			go_go = true,
-			push = true,
-			reload = true,
-			look_for_angle = true,
-			inpos = true,
-			saw = true,
-			trip_mine = true,
-			sentry = true,
-			ready = true,
-			smoke = true,
-			flash_grenade = true,
-			open_fire = true,
-			sabotagepower = true,
-			sabotagedrill = true,
-			sabotagegeneric = true,
-			sabotagegear = true,
-			sabotagebags = true,
-			sabotagehostages = true
-		},
-		swat = {
-			entry = true,
-			aggressive = true,
-			retreat = true,
-			contact = true,
-			clear = true,
-			go_go = true,
-			push = true,
-			reload = true,
-			look_for_angle = true,
-			inpos = true,
-			saw = true,
-			ammo_bag = true,
-			doctor_bag = true,
-			first_aid_kit = true,
-			trip_mine = true,
-			sentry = true,
-			ready = true,
-			smoke = true,
-			flash_grenade = true,
-			open_fire = true,
-			sabotagebags = true,
-			sabotagehostages = true
-		},
-		gangster = {
-			aggressive = true,
-			contact = true,
-			go_go = true
-		},
-		cop = {
-			aggressive = true,
-			contact = true,
-			clear = true,
-			clear_whisper = true,
-			saw = true,
-			ammo_bag = true,
-			doctor_bag = true,
-			first_aid_kit = true,
-			trip_mine = true,
-			sentry = true
-		},
-		security = {
-			aggressive = true,
-			contact = true,
-			clear_whisper = true
-		}
+	-- Security
+	self.gensec.chatter = {
+		aggressive = true,
+		contact = true,
+		clear_whisper = true
 	}
+	self.security.chatter = self.gensec.chatter
+	self.security_undominatable.chatter = self.gensec.chatter
+	self.security_mex.chatter = self.gensec.chatter
+	self.security_mex_no_pager.chatter = self.gensec.chatter
 
+	-- Cops
+	self.cop.chatter = {
+		aggressive = true,
+		contact = true,
+		clear = true,
+		clear_whisper = true,
+		saw = true,
+		ammo_bag = true,
+		doctor_bag = true,
+		first_aid_kit = true,
+		trip_mine = true,
+		sentry = true
+	}
+	-- SWAT
+	self.swat.chatter = {
+		entry = true,
+		aggressive = true,
+		retreat = true,
+		contact = true,
+		clear = true,
+		go_go = true,
+		push = true,
+		reload = true,
+		look_for_angle = true,
+		inpos = true,
+		saw = true,
+		ammo_bag = true,
+		doctor_bag = true,
+		first_aid_kit = true,
+		trip_mine = true,
+		sentry = true,
+		ready = true,
+		smoke = true,
+		flash_grenade = true,
+		open_fire = true
+	}
+	self.fbi.chatter = self.swat.chatter
+	self.fbi_swat.chatter = self.swat.chatter
+	self.city_swat.chatter = self.swat.chatter
+
+	-- Heavy SWAT
+	self.heavy_swat.chatter = {
+		entry = true,
+		aggressive = true,
+		retreat = true,
+		contact = true,
+		clear = true,
+		go_go = true,
+		push = true,
+		reload = true,
+		look_for_angle = true,
+		inpos = true,
+		saw = true,
+		trip_mine = true,
+		sentry = true,
+		ready = true,
+		smoke = true,
+		flash_grenade = true,
+		open_fire = true,
+		sabotagepower = true
+	}
+	self.fbi_heavy_swat.chatter = self.heavy_swat.chatter
+
+	-- Specials
 	self.tank.chatter = {
 		contact = true,
 		aggressive = true,
@@ -174,22 +176,16 @@ Hooks:PostHook(CharacterTweakData, "init", "RR_Set_Enemy_Chatter", function(self
 		aggressive = true,
 		approachingspecial = true
 	}
-	self.swat.chatter = chatter_setups.swat
-	self.fbi.chatter = chatter_setups.swat
-	self.heavy_swat.chatter = chatter_setups.heavy_swat
-	self.fbi_swat.chatter = chatter_setups.swat
-	self.fbi_heavy_swat.chatter = chatter_setups.heavy_swat
-	self.city_swat.chatter = chatter_setups.swat
-	self.gangster.chatter = chatter_setups.gangster
-	self.mobster.chatter = chatter_setups.gangster
-	self.biker.chatter = chatter_setups.gangster
-	self.biker_escape.chatter = chatter_setups.gangster
-	self.bolivian.chatter = chatter_setups.gangster
-	self.bolivian_indoors.chatter = chatter_setups.gangster
-	self.cop.chatter = chatter_setups.cop
-	self.gensec.chatter = chatter_setups.security
-	self.security.chatter = chatter_setups.security
-	self.security_undominatable.chatter = chatter_setups.security
-	self.security_mex.chatter = chatter_setups.security
-	self.security_mex_no_pager.chatter = chatter_setups.security
+
+	-- Gangsters
+	self.gangster.chatter = {
+		aggressive = true,
+		contact = true,
+		go_go = true
+	}
+	self.mobster.chatter = self.gangster.chatter
+	self.biker.chatter = self.gangster.chatter
+	self.biker_escape.chatter = self.gangster.chatter
+	self.bolivian.chatter = self.gangster.chatter
+	self.bolivian_indoors.chatter = self.gangster.chatter
 end)

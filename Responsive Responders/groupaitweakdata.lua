@@ -56,46 +56,6 @@ Hooks:PostHook(GroupAITweakData, "_init_chatter_data", "RR_init_chatter_data", f
 	    group_min = 1,
 	    queue = "e03"
 	}
-	self.enemy_chatter.sabotagedrill = {
-		radius = 2000,
-	    max_nr = 10,
-	    duration = {1, 1},
-	    interval = {8, 16},
-	    group_min = 1,
-	    queue = "e01"
-	}
-	self.enemy_chatter.sabotagegeneric = {
-		radius = 2000,
-	    max_nr = 10,
-	    duration = {1, 1},
-	    interval = {8, 16},
-	    group_min = 1,
-	    queue = "e04"
-	}
-	self.enemy_chatter.sabotagegear = {
-		radius = 2000,
-	    max_nr = 10,
-	    duration = {1, 1},
-	    interval = {8, 16},
-	    group_min = 1,
-	    queue = "e02"
-	}
-	self.enemy_chatter.sabotagebags = {
-		radius = 2000,
-	    max_nr = 10,
-	    duration = {1, 1},
-	    interval = {8, 16},
-	    group_min = 1,
-	    queue = "l01"
-	}
-	self.enemy_chatter.sabotagehostages = {
-		radius = 2000,
-	    max_nr = 40,
-	    duration = {1, 1},
-	    interval = {8, 16},
-	    group_min = 1,
-	    queue = "civ"
-	}
 	self.enemy_chatter.hostagepanic1 = {
 		radius = 2000,
 	    max_nr = 40,
