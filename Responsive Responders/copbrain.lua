@@ -5,7 +5,7 @@ function CopBrain:on_suppressed(state)
 	if self._current_logic.on_suppressed_state then
 		self._current_logic.on_suppressed_state(self._logic_data)
 
-		if self._logic_data.char_tweak.chatter.suppress then
+		if state and self._logic_data.char_tweak.chatter.suppress then
 			if managers.groupai:state():chk_assault_active_atm() then
 				self._unit:sound():say(math_random() > 0.5 and "hlp" or "lk3a", true)
 			else
